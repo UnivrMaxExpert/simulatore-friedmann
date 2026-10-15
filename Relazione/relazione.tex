@@ -30,6 +30,7 @@
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,positioning}
 \usepackage[hidelinks]{hyperref}
+\newcommand{\demo}[1]{\par\smallskip\noindent{\color{blu}\small\sffamily$\blacktriangleright$\ #1}\par\smallskip}
 
 \newcommand{\Om}{\Omega_m}
 \newcommand{\Or}{\Omega_r}
@@ -422,19 +423,49 @@ Il simulatore risolve le equazioni di Friedmann per qualunque combinazione di ma
 \appendix
 
 % ===========================================================================
-\section{Traccia per la presentazione (circa 10 minuti)}
+\section{Scaletta dell'orale}
 % ===========================================================================
+L'orale si apre con una breve introduzione teorica al fenomeno, poi mostra nel simulatore come cambia l'universo al variare dei parametri, collegando ogni risultato alla sua formula, e chiude con il funzionamento del programma. Il testo completo è nell'appendice~\ref{app:discorso}.
 
-\begin{enumerate}[leftmargin=*,label=\textbf{\arabic*.}]
-  \item \textbf{Introduzione (1 min).} ``Ho realizzato un simulatore che, dati i parametri di oggi, risolve le equazioni di Friedmann e mostra l'evoluzione dell'universo in 3D.'' Avviare con \texttt{python avvia.py}.
-  \item \textbf{$\Lambda$CDM e lo spazio curvo (2 min).} Vista ``Spazio curvo'' con $\Lambda$CDM: spiegare che la griglia è lo spazio con una dimensione in meno e che è piatto perché $\Ok\approx0$. Premere \emph{play}: lo spazio si dilata, le galassie si allontanano ma non si ingrandiscono. Prima di $z\approx10$ le galassie non ci sono.
-  \item \textbf{Le tre geometrie (1 min).} ``Confronta $k=+1,0,-1$'': collegare a $\operatorname{sgn}(\Omega-1)=\operatorname{sgn}k$.
-  \item \textbf{Il problema dell'età (2 min).} Aprire il pannello, scegliere $\Lambda$CDM e aggiungerlo al confronto; poi Einstein--de Sitter: l'età scende da 13,8 a 9,3 miliardi di anni ($t_0=2/3H_0$). Serve l'energia oscura.
-  \item \textbf{Il Big Crunch (1 min).} Modello chiuso: $a(t)$ sale fino a $a_{\max}=1{,}5$ e torna a zero; $H$ diventa negativo. Spiegare perché si integra la II equazione.
-  \item \textbf{L'accelerazione (1 min).} Grafico $q(t)$ in $\Lambda$CDM: $q$ cambia segno circa 6 miliardi di anni fa; condizione $w<-1/3$.
-  \item \textbf{Galassie e orizzonti (1,5 min).} Legge di Hubble, raggio di Hubble, orizzonte della particella; in coordinate comoventi il raggio di Hubble si restringe nel futuro (come durante l'inflazione).
-  \item \textbf{Superficie e verifica (0,5 min).} La superficie $a(t,\Om)$; i numeri coincidono con \texttt{astropy} e con le formule analitiche.
-\end{enumerate}
+\begin{table}[H]\centering\small
+\begin{tabularx}{\linewidth}{@{}l>{\raggedright\arraybackslash}Xl@{}}
+\toprule
+Parametro & Cosa succede nel simulatore & Formula\\
+\midrule
+$H_0$ più grande & universo più giovane & $t_0\propto 1/H_0$\\
+$\Om<1,\ =1,\ >1$ & aperto / piatto / chiuso; con $\Om>1$ e $\OL=0$ Big Crunch & $\operatorname{sgn}(\Omega-1)=\operatorname{sgn}k$\\
+$\OL=0$ ($\Om=1$) & età da 13,8 a \SI{9.3}{Gyr}, nessuna accelerazione & $t_0=2/(3H_0)$\\
+$\OL$ grande & accelerazione; con troppa $\Lambda$ nessun Big Bang (rimbalzo) & $q_0=\Om/2-\OL$\\
+$\OL<0$ & ricollasso anche con $k=-1$ (anti-de Sitter) & $a\propto\sin(\sqrt{0{,}5}\,H_0t)$\\
+$w<-1/3$ & l'espansione accelera & $\ddot a>0\iff\rho+3p/c^2<0$\\
+$w<-1$ & Big Rip in un tempo finito & $\rho\propto a^{-3(1+w)}$ cresce\\
+solo $\Or$ & espansione più lenta & $a\propto t^{1/2}$\\
+solo $\OL$ & espansione esponenziale, nessun inizio & $a\propto e^{Ht}$\\
+\bottomrule
+\end{tabularx}
+\caption{Come cambia l'universo al variare dei parametri (traccia per le dimostrazioni dal vivo).}
+\end{table}
+
+\begin{table}[H]\centering\small
+\begin{tabular}{@{}rlll@{}}
+\toprule
+& Parte & Durata & Nel simulatore\\
+\midrule
+0--2 & Il fenomeno e le equazioni & 3 min & ---\\
+3--4 & $\Lambda$CDM e le tre geometrie & 1,5 min & Spazio curvo\\
+5--7 & Età, Big Crunch, accelerazione & 3 min & pannello, grafici $a(t)$, $H$, $q$\\
+8 & Galassie e orizzonti & 1,5 min & Galassie e orizzonti\\
+9--10 & Funzionamento, verifica, chiusura & 1,5 min & Superficie $a(t)$\\
+\bottomrule
+\end{tabular}
+\caption{Tempi indicativi (circa 10 minuti). In due si può alternare: uno spiega la formula, l'altro la mostra nel simulatore.}
+\end{table}
+
+% ===========================================================================
+\section{Discorso completo}\label{app:discorso}
+% ===========================================================================
+Le righe precedute da {\color{blu}$\blacktriangleright$} sono le azioni da fare sul simulatore.
+\input{discorso_testo}
 
 % ===========================================================================
 \section{Domande probabili}

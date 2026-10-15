@@ -1,0 +1,92 @@
+% ---------------------------------------------------------------------------
+%  Testo del discorso per l'orale: incluso sia in relazione.tex (appendice)
+%  sia in discorso.tex (versione da stampare e imparare).
+%  Le righe con il triangolo blu (\demo) sono azioni da fare sul simulatore, non da dire.
+% ---------------------------------------------------------------------------
+
+\subsection*{0. Apertura \hfill\normalfont\small 30 s}
+Buongiorno. Il nostro progetto è un simulatore della dinamica dell'universo: dati i contenuti dell'universo di oggi, risolve le equazioni di Friedmann e ne mostra il passato e il futuro, anche in tre dimensioni.
+Prima introduciamo brevemente la fisica, poi mostriamo nel simulatore come ogni risultato discende dalle formule, e infine spieghiamo come funziona il programma.
+
+\demo{Avviare con \texttt{avvia.bat} prima di entrare: si apre su $\Lambda$CDM, vista ``Spazio curvo''.}
+
+\subsection*{1. Il fenomeno: l'universo si espande \hfill\normalfont\small 1 min}
+Osservando le galassie lontane si vede che si allontanano da noi con una velocità proporzionale alla distanza: è la legge di Hubble, $v = H_0\, d$.
+Questo non significa che noi siamo al centro: ogni galassia vede tutte le altre allontanarsi. Non sono le galassie a muoversi nello spazio, è lo spazio stesso che si dilata.
+
+Per descriverlo si usa un solo numero che dipende dal tempo, il \textbf{fattore di scala} $a(t)$. Ogni galassia ha una coordinata comovente $r$ fissa, e la sua distanza fisica è $d = a(t)\,r$. Per convenzione $a = 1$ oggi; $a = 1/2$ vuol dire che le distanze erano la metà.
+Derivando, $v = \dot a\, r = \frac{\dot a}{a}\, d$: la legge di Hubble viene fuori da sola, con $H = \dot a / a$.
+
+Anche il redshift si legge con $a$: la luce si allunga insieme allo spazio, quindi $1 + z = 1/a(t_e)$. Una galassia a $z = 1$ ha emesso la luce quando l'universo era grande la metà.
+
+\subsection*{2. Le equazioni di Friedmann \hfill\normalfont\small 1 min 30 s}
+Se l'universo su grande scala è omogeneo e isotropo --- il principio cosmologico --- la geometria è quella di Robertson--Walker e dipende solo da $a(t)$ e dal segno della curvatura $k$: $k=0$ spazio piatto, $k=+1$ chiuso come una sfera, $k=-1$ aperto come una sella.
+
+Inserendo questa metrica nelle equazioni di Einstein si ottengono le equazioni di Friedmann. La prima,
+\[
+  H^2 = \frac{8\pi G}{3}\rho - \frac{kc^2}{a^2},
+\]
+lega la velocità di espansione a quello che c'è nell'universo e alla curvatura. La seconda,
+\[
+  \frac{\ddot a}{a} = -\frac{4\pi G}{3}\left(\rho + \frac{3p}{c^2}\right),
+\]
+dice se l'espansione rallenta o accelera. La terza è la conservazione dell'energia e, con l'equazione di stato $p = w\rho c^2$, dà $\rho \propto a^{-3(1+w)}$.
+
+Quindi ogni ingrediente si diluisce in modo diverso: la radiazione come $a^{-4}$, la materia come $a^{-3}$, la costante cosmologica resta costante. Per questo nella storia dell'universo domina prima la radiazione, poi la materia, oggi l'energia oscura.
+
+Definendo la densità critica $\rho_c = 3H^2/8\pi G$ e $\Omega = \rho/\rho_c$, la prima equazione diventa $\Omega - 1 = kc^2/(a^2H^2)$: il segno di $\Omega - 1$ è il segno della curvatura. Con più densità di quella critica l'universo è chiuso, con meno è aperto.
+In conclusione, i parametri di oggi --- $H_0$, $\Omega_m$, $\Omega_r$, $\Omega_\Lambda$ e $w$ --- determinano tutta la storia dell'universo. Il simulatore fa esattamente questo.
+
+\subsection*{3. Il nostro universo, \texorpdfstring{$\Lambda$}{Lambda}CDM \hfill\normalfont\small 1 min}
+\demo{Vista ``Spazio curvo'', modello $\Lambda$CDM. Premere play.}
+Questo è il modello standard, con i parametri di Planck: circa 31\% di materia e 69\% di energia oscura, quindi $\Omega \approx 1$ e lo spazio è piatto.
+La griglia rappresenta lo spazio con una dimensione in meno, perché uno spazio curvo tridimensionale non si può disegnare. Le galassie sono ferme sulla griglia, cioè hanno coordinate comoventi fisse: è la griglia che si dilata come $a(t)$.
+Le galassie si allontanano ma non diventano più grandi, perché sono tenute insieme dalla gravità. E prima di $z \approx 10$ non ci sono: non si erano ancora formate.
+
+\demo{Aprire ``Parametri e grafici'': indicare l'età.}
+L'età che risulta è 13,8 miliardi di anni, come quella misurata.
+
+\subsection*{4. Le tre geometrie \hfill\normalfont\small 30 s}
+\demo{Pulsante ``Confronta $k = +1, 0, -1$''.}
+Qui ci sono le tre geometrie allo stesso fattore di scala: la sfera per $\Omega > 1$, il piano per $\Omega = 1$, la sella per $\Omega < 1$. È la relazione $\operatorname{sgn}(\Omega - 1) = \operatorname{sgn}(k)$, e il segno non cambia nel tempo.
+
+\subsection*{5. Il problema dell'età \hfill\normalfont\small 1 min}
+\demo{``Aggiungi al confronto'' su $\Lambda$CDM, poi modello Einstein--de Sitter.}
+Ora togliamo l'energia oscura: solo materia, universo piatto. È il modello di Einstein--de Sitter. La prima equazione si risolve a mano: $a(t) \propto t^{2/3}$ e quindi $H = 2/(3t)$, cioè l'età è $t_0 = 2/(3H_0)$.
+Il simulatore infatti dà 9,3 miliardi di anni. Ma ci sono stelle più vecchie di 10 miliardi di anni: è il problema dell'età. Senza energia oscura i conti non tornano.
+Nel grafico si vede anche perché: la curva di $a(t)$ è concava, l'espansione ha sempre rallentato, quindi andando indietro arriva prima a zero. Quel punto, dove $a = 0$ e la densità è infinita, è il Big Bang.
+
+\subsection*{6. Il Big Crunch \hfill\normalfont\small 1 min}
+\demo{Modello ``Chiuso, solo materia'' ($\Omega_m = 3$). Mostrare $a(t)$ e $H(t)$.}
+Se la densità supera quella critica, senza energia oscura, l'universo è chiuso. L'espansione rallenta fino a fermarsi, a $a_{\max} = \Omega_m/(\Omega_m - 1) = 1{,}5$, poi l'universo ricollassa: il Big Crunch, qui dopo circa 47 miliardi di anni dal Big Bang. Nel grafico $H$ diventa negativo.
+Questo spiega una scelta del programma: la prima equazione dà $\dot a$ come una radice quadrata, sempre positiva, quindi non può descrivere un universo che si ferma e torna indietro. Per questo integriamo la seconda equazione, che contiene $\ddot a$ e segue l'inversione; la prima serve solo per le condizioni iniziali.
+
+\subsection*{7. L'espansione accelerata \hfill\normalfont\small 1 min}
+\demo{Tornare a $\Lambda$CDM, grafico ``$q(t)$''.}
+Il parametro di decelerazione $q = -\ddot a\, a/\dot a^2$ è positivo quando l'espansione rallenta. Dalla seconda equazione, l'espansione accelera solo se $\rho + 3p/c^2 < 0$, cioè con $w < -1/3$: la materia non può farlo, l'energia oscura con $w = -1$ sì.
+Nel nostro universo $q$ cambia segno circa 6 miliardi di anni fa, a $z \approx 0{,}6$: da lì l'energia oscura domina. È quello che hanno misurato con le supernovae nel 1998. Oggi $q_0 \approx -0{,}53$.
+
+\demo{Modello de Sitter.}
+Se c'è solo costante cosmologica, $H$ è costante e $a \propto e^{Ht}$: andando indietro $a$ non arriva mai a zero, quindi non c'è Big Bang e l'età non è definita. È così che va l'inflazione nell'universo primordiale, ed è il futuro del nostro universo.
+
+\demo{Facoltativo: $w = -1{,}5$ dal cursore.}
+Se $w < -1$ la densità dell'energia oscura aumenta con l'espansione e l'universo si strappa in un tempo finito: il Big Rip.
+
+\subsection*{8. Galassie e orizzonti \hfill\normalfont\small 1 min 30 s}
+\demo{Vista ``Galassie e orizzonti'', $\Lambda$CDM oggi; poi ``Comoventi'' e play nel futuro.}
+Qui siamo al centro, e il colore delle galassie indica la velocità di recessione $v = H\, d$.
+La sfera rossa è il raggio di Hubble, $c/H$, circa 14,5 miliardi di anni luce: oltre, le galassie si allontanano più veloci della luce. Non viola la relatività, perché è lo spazio che si espande.
+La sfera arancione è l'orizzonte della particella, $\chi_p = c\int dt/a$: la distanza da cui la luce ha fatto in tempo ad arrivarci dal Big Bang. Oggi è circa 46 miliardi di anni luce: molto più di 13,8 miliardi di anni luce, perché mentre la luce viaggiava lo spazio si è dilatato. Le galassie grigie sono oltre l'orizzonte e non le vediamo ancora.
+In coordinate comoventi, andando nel futuro, il raggio di Hubble si restringe: sempre più galassie escono dalla nostra portata. È lo stesso meccanismo dell'inflazione, che risolve il problema dell'orizzonte.
+
+\subsection*{9. Come funziona il simulatore e verifica \hfill\normalfont\small 1 min}
+\demo{Vista ``Superficie $a(t)$'', famiglia ``da aperto a chiuso''.}
+Questa superficie riassume tutto: ogni sezione è una soluzione delle equazioni di Friedmann al variare di $\Omega_m$. Per $\Omega_m > 1$ le curve tornano a zero: il Big Crunch.
+
+Il programma ha due parti. Il server di calcolo, in Python, integra la seconda equazione partendo da oggi, con $a = 1$ e $\dot a = H_0$, sia all'indietro fino al Big Bang sia in avanti, con un integratore Runge--Kutta adattivo di SciPy; riconosce gli eventi notevoli e classifica l'origine e il destino. L'interfaccia, nel browser, mostra i risultati in 3D e nei grafici.
+Abbiamo verificato i risultati con le soluzioni analitiche --- Einstein--de Sitter, solo radiazione, universo chiuso, anti-de Sitter --- e con la libreria \texttt{astropy}: le età coincidono alla terza cifra decimale.
+
+\subsection*{10. Chiusura \hfill\normalfont\small 20 s}
+In sintesi: con le sole equazioni di Friedmann e cinque parametri si ottengono il Big Bang, il ricollasso, l'espansione eterna e quella accelerata, e il simulatore mostra ogni caso collegato alla sua formula.
+I limiti sono che il modello descrive l'espansione media e non la formazione delle strutture, e che la curvatura è rappresentata con una superficie in due dimensioni.
+Grazie, siamo pronti per le domande.
