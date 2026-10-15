@@ -1,0 +1,28 @@
+# Ambienti e dipendenze (si ricreano da soli con avvia.bat / avvia.py)
+.venv/
+venv/
+node_modules/
+frontend/dist/
+
+# Cache Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# File temporanei di LaTeX (si tiene solo .tex, .pdf e fig/)
+Relazione/*.aux
+Relazione/*.log
+Relazione/*.out
+Relazione/*.toc
+Relazione/*.synctex.gz
+
+# Materiale del corso della prof (slide, sottotitoli): non serve per eseguire il simulatore
+Materiale/
+Teoria/
+
+# Sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/

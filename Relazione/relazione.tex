@@ -1,0 +1,494 @@
+\documentclass[11pt,a4paper]{article}
+
+% ---------------------------------------------------------------------------
+%  Relazione di progetto — Simulatore di Friedmann
+%  Compilare con: pdflatex relazione.tex (due volte, per indice e riferimenti)
+% ---------------------------------------------------------------------------
+\usepackage[italian]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage[a4paper,margin=2.6cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{siunitx}
+\sisetup{output-decimal-marker={,}, group-separator={\,}, per-mode=symbol}
+\usepackage{booktabs,array,tabularx}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage{enumitem}
+\setlist{itemsep=2pt,topsep=4pt}
+\usepackage{xcolor}
+\definecolor{blu}{HTML}{2346A0}
+\definecolor{viola}{HTML}{7A4FA0}
+\definecolor{ambra}{HTML}{B5651D}
+\usepackage[most]{tcolorbox}
+\newtcolorbox{orale}{colback=blu!4,colframe=blu!60,boxrule=0.6pt,arc=2pt,left=6pt,right=6pt,top=4pt,bottom=4pt,
+  fonttitle=\bfseries\small,title=All'orale}
+\newtcolorbox{nota}{colback=ambra!5,colframe=ambra!70,boxrule=0.6pt,arc=2pt,left=6pt,right=6pt,top=4pt,bottom=4pt}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\Om}{\Omega_m}
+\newcommand{\Or}{\Omega_r}
+\newcommand{\OL}{\Omega_\Lambda}
+\newcommand{\Ok}{\Omega_k}
+\newcommand{\Gyr}{\,\mathrm{Gyr}}
+
+\title{\textbf{Simulatore della dinamica dell'universo\\basato sulle equazioni di Friedmann}\\[4pt]
+\large Relazione di progetto}
+\author{Louis Qyli \quad (matricola VR501547)\\[2pt]
+\small Elementi di Cosmologia e Relatività Generale --- Prof.ssa Claudia Daffara\\
+\small Università di Verona, A.A.\ 2025/2026}
+\date{Ottobre 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent
+La richiesta del progetto era di \emph{implementare un piccolo simulatore di dinamica dell'universo risolvendo le equazioni di Friedmann, cambiando i parametri di input, e di plottare anche in 3D}.
+Il simulatore realizzato è una webapp che, dati i parametri cosmologici di oggi ($H_0$, $\Om$, $\OL$, $\Or$, $w$), integra numericamente la seconda equazione di Friedmann e mostra l'evoluzione del fattore di scala $a(t)$, del parametro di Hubble, dei parametri di densità e del parametro di decelerazione.
+La visualizzazione 3D rappresenta lo spazio curvo ($k=+1,0,-1$) che si dilata nel tempo, le galassie che si allontanano secondo la legge di Hubble con il raggio di Hubble e l'orizzonte della particella, e la superficie $a(t,\text{parametro})$ che riassume intere famiglie di soluzioni.
+I risultati sono stati confrontati con soluzioni analitiche e con la libreria \texttt{astropy}: l'età dell'universo nel modello $\Lambda$CDM risulta \SI{13.79}{Gyr} e le altre grandezze coincidono alla terza cifra decimale.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+% ===========================================================================
+\section{Obiettivo e uso del simulatore}
+% ===========================================================================
+
+Il simulatore risponde a una domanda: \emph{dati i contenuti dell'universo oggi, come si è evoluto e come evolverà?}
+L'utente sceglie un modello (o imposta i parametri a mano), e il programma
+\begin{enumerate}
+  \item risolve le equazioni di Friedmann e ricava $a(t)$ dal Big Bang (se esiste) fino a un orizzonte futuro scelto;
+  \item calcola le grandezze derivate: età $t_0$, parametro di Hubble $H(t)$, parametri di densità $\Omega_i(t)$, parametro di decelerazione $q(t)$, redshift, istante di inizio dell'accelerazione, destino finale;
+  \item mostra il risultato in 3D e in grafici 2D, con una linea del tempo che permette di ``scorrere'' la storia dell'universo.
+\end{enumerate}
+
+\paragraph{Avvio.} Dalla cartella del progetto si esegue un unico comando,
+\begin{center}\texttt{python avvia.py}\end{center}
+che prepara l'ambiente (dipendenze Python e JavaScript), avvia il server di calcolo e l'interfaccia e apre il browser. Su Windows è sufficiente un doppio clic su \texttt{avvia.bat}.
+
+% ===========================================================================
+\section{Richiami teorici}
+% ===========================================================================
+I contenuti di questa sezione seguono le prime tre lezioni del corso; per ogni argomento è indicato dove compare nel simulatore.
+
+\subsection{Principio cosmologico e metrica di Robertson--Walker}
+Su scale maggiori di circa \SI{100}{Mpc} l'universo è omogeneo e isotropo. Sotto questa ipotesi la geometria dello spaziotempo è descritta dalla metrica di Robertson--Walker
+\begin{equation}
+  ds^2 = c^2dt^2 - a^2(t)\left[\frac{dr^2}{1-kr^2} + r^2 d\Omega^2\right], \qquad k\in\{-1,0,+1\},
+  \label{eq:rw}
+\end{equation}
+dove $r$ è la coordinata \emph{comovente} (fissa per ogni galassia), $a(t)$ è il fattore di scala, normalizzato a $a(t_0)=1$ oggi, e $k$ è il segno della curvatura spaziale:
+\begin{itemize}
+  \item $k=0$: spazio piatto, euclideo e infinito;
+  \item $k=+1$: spazio chiuso, analogo tridimensionale della superficie di una sfera, finito e senza bordi;
+  \item $k=-1$: spazio aperto, a curvatura negativa (iperboloide, ``sella''), infinito.
+\end{itemize}
+La distanza fisica tra due galassie è $d(t)=a(t)\,r$: le galassie non si muovono nello spazio, è lo spazio che si dilata.
+\emph{Nel simulatore:} vista ``Spazio curvo'' (sezione~\ref{sec:spazio}).
+
+\subsection{Le equazioni di Friedmann}
+Inserendo la metrica~\eqref{eq:rw} nelle equazioni di Einstein, con un fluido perfetto di densità $\rho$ e pressione $p$, si ottengono
+\begin{align}
+  \text{I}\qquad & \left(\frac{\dot a}{a}\right)^2 = \frac{8\pi G}{3}\,\rho - \frac{kc^2}{a^2}, \label{eq:f1}\\
+  \text{II}\qquad & \frac{\ddot a}{a} = -\frac{4\pi G}{3}\left(\rho + \frac{3p}{c^2}\right), \label{eq:f2}\\
+  \text{III}\qquad & \dot\rho = -3\,\frac{\dot a}{a}\left(\rho + \frac{p}{c^2}\right). \label{eq:f3}
+\end{align}
+La III è la conservazione dell'energia; solo due delle tre equazioni sono indipendenti. Con l'equazione di stato $p = w\rho c^2$ la III si integra:
+\begin{equation}
+  \rho(a) = \rho_0\, a^{-3(1+w)} .
+\end{equation}
+
+\begin{table}[H]\centering\small
+\begin{tabular}{@{}lccl@{}}
+\toprule
+Componente & $w$ & $\rho\propto$ & Parametro nel simulatore\\
+\midrule
+Materia (barionica + oscura), ``polvere'' & $0$ & $a^{-3}$ & $\Om$\\
+Radiazione & $1/3$ & $a^{-4}$ & $\Or$\\
+Costante cosmologica / energia oscura & $-1$ (o $w$) & costante (o $a^{-3(1+w)}$) & $\OL$, $w$\\
+Curvatura (termine effettivo) & $-1/3$ & $a^{-2}$ & $\Ok$ (derivato)\\
+\bottomrule
+\end{tabular}
+\caption{Componenti dell'universo, equazioni di stato e andamento della densità.}
+\end{table}
+
+\subsection{Parametro di Hubble, densità critica e geometria}
+Si definiscono
+\begin{equation}
+  H(t)\equiv\frac{\dot a}{a}, \qquad \rho_c(t)\equiv\frac{3H^2(t)}{8\pi G}, \qquad \Omega(t)\equiv\frac{\rho(t)}{\rho_c(t)} .
+\end{equation}
+Dividendo la I per $H^2$:
+\begin{equation}
+  \Omega - 1 = \frac{kc^2}{a^2H^2} \qquad\Longrightarrow\qquad \operatorname{sgn}(\Omega-1)=\operatorname{sgn}(k).
+  \label{eq:segno}
+\end{equation}
+Dunque $\Omega>1$ significa universo chiuso, $\Omega=1$ piatto, $\Omega<1$ aperto, e il segno non cambia nel tempo (se $\Omega>1$ oggi, $\Omega>1$ sempre). Oggi $\rho_{c,0}=\num{1.88}\,h^2\times10^{-29}\,\si{g/cm^3}$ con $h=H_0/(100\,\si{km.s^{-1}.Mpc^{-1}})$.
+
+Dalla funzione di luminosità delle galassie (Schechter) si stima la materia visibile, $\Omega_b\approx\num{0.03}$; dalla dinamica (teorema del viriale, $M=3R\langle v_r\rangle^2/G$) si ottiene circa dieci volte di più, $\Omega_M\approx\num{0.27}$: è il problema della materia oscura. Le osservazioni indicano però $\Omega\approx1$: la parte mancante è energia oscura.
+
+Introducendo i parametri di densità di oggi $\Omega_{i}=\rho_{i,0}/\rho_{c,0}$ e $\Ok\equiv1-\Om-\Or-\OL$, la I assume la forma usata nel codice:
+\begin{equation}
+  H^2(a) = H_0^2\,E^2(a), \qquad
+  E^2(a) = \Or a^{-4} + \Om a^{-3} + \Ok a^{-2} + \OL a^{-3(1+w)} .
+  \label{eq:E2}
+\end{equation}
+\emph{Nel simulatore:} la barra ``Densità'' mostra $\Omega_i(t)=\Omega_i\,a^{-3(1+w_i)}/E^2(a)$ al tempo del cursore, con una tacca a $\Omega=1$.
+
+\subsection{Modelli piatti senza costante cosmologica e Big Bang}
+Per $k=0$, $\Lambda=0$ e un solo fluido con $w$ costante la I si risolve per separazione di variabili:
+\begin{equation}
+  a(t)\propto t^{\frac{2}{3(1+w)}}, \qquad H(t)=\frac{2}{3(1+w)}\,\frac1t .
+\end{equation}
+Se $1+3w>0$ la II dà $\ddot a<0$: la curva $a(t)$ è concava e, andando indietro, raggiunge $a=0$ in un tempo finito. Lì $\rho\to\infty$ e $H\to\infty$: è la singolarità del \textbf{Big Bang}, dovuta alle condizioni iniziali e non alla pressione (che, semmai, frena l'espansione).
+
+\begin{table}[H]\centering\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Modello & $w$ & $a(t)$ & età $t_0$ ($h=0{,}7$)\\
+\midrule
+Einstein--de Sitter (materia) & $0$ & $t^{2/3}$ & $\dfrac{2}{3H_0}\approx\SI{9.31}{Gyr}$\\[6pt]
+Radiazione & $1/3$ & $t^{1/2}$ & $\dfrac{1}{2H_0}\approx\SI{6.98}{Gyr}$\\
+\bottomrule
+\end{tabular}
+\caption{Soluzioni piatte con un solo fluido.}
+\end{table}
+
+\paragraph{Il problema dell'età.} Con la sola materia l'universo avrebbe circa 9--10 miliardi di anni, mentre le misure danno \SI{13.8}{Gyr} (e alcune stelle sono più vecchie di 10 miliardi di anni). Serve curvatura o un'altra componente: l'energia oscura.
+\emph{Nel simulatore:} confrontando ``Einstein--de Sitter'' e ``$\Lambda$CDM'' nel grafico di $a(t)$ e nei risultati (l'età è mostrata accanto al valore misurato).
+
+\subsection{La costante cosmologica}
+Con la costante cosmologica le equazioni di Friedmann diventano
+\begin{equation}
+  H^2 = \frac{8\pi G}{3}\rho - \frac{kc^2}{a^2} + \frac{\Lambda c^2}{3}, \qquad
+  \frac{\ddot a}{a} = -\frac{4\pi G}{3}\left(\rho+\frac{3p}{c^2}\right) + \frac{\Lambda c^2}{3}.
+\end{equation}
+$\Lambda$ equivale a un fluido con $w=-1$ e densità costante $\rho_\Lambda=\Lambda c^2/(8\pi G)$.
+
+\paragraph{Universo statico di Einstein.} Imponendo $\ddot a=0$ senza $\Lambda$ si ottiene $\rho=-3p/c^2$, impossibile per un fluido ordinario. Con $\Lambda$ e polvere ($p=0$) la soluzione statica esiste: $\Lambda c^2=4\pi G\rho$ e, dalla I, $k=+1$ con $a=c/\sqrt{4\pi G\rho}$. L'equilibrio è però instabile. Con la scoperta dell'espansione Einstein definì $\Lambda$ ``il più grande errore della mia vita''. Un universo esattamente statico ha $H_0=0$, quindi non si può impostare con i parametri ``di oggi'' del simulatore, che normalizzano tutto a $H_0>0$.
+
+\paragraph{de Sitter e anti-de Sitter.} Con solo $\Lambda>0$: $H=c\sqrt{\Lambda/3}$ costante e $a(t)\propto e^{Ht}$; non c'è Big Bang a tempo finito. È il comportamento dell'inflazione nell'universo primordiale e del nostro futuro. Con $\Lambda<0$ (anti-de Sitter) è necessario $k=-1$ e si ottiene $a(t)=\sqrt{3/|\Lambda|}\,\sin\!\big(c\sqrt{|\Lambda|/3}\,t\big)$: l'universo si espande, si ferma e ricollassa.
+Con la normalizzazione del simulatore ($\OL=-0{,}5$, $\Ok=1{,}5$) si ha $a(t)=\sqrt3\,\sin(\sqrt{0{,}5}\,H_0t)$.
+
+\subsection{Energia oscura ed espansione accelerata}
+Il parametro di decelerazione è
+\begin{equation}
+  q \equiv -\frac{\ddot a\,a}{\dot a^2}, \qquad
+  q_0 = \Or + \tfrac12\Om + \tfrac{1+3w}{2}\,\OL .
+\end{equation}
+Dalla II, $\ddot a>0 \iff \rho+3p/c^2<0 \iff w<-1/3$.
+Le supernovae Ia (Riess et al.\ 1998; Perlmutter et al.\ 1999) mostrano che oggi l'espansione accelera; la radiazione cosmica di fondo e la dinamica degli ammassi indicano che circa il \SI{70}{\percent} della densità totale è energia oscura.
+Come estensione, il simulatore permette $w\neq-1$: per $w<-1$ (energia ``fantasma'') la densità cresce con l'espansione e $a\to\infty$ in un tempo finito (\emph{Big Rip}, Caldwell et al.\ 2003).
+
+\subsection{Modelli curvi e destino dell'universo}
+Senza $\Lambda$, la curvatura decide il destino: per $\Omega<1$ l'espansione continua per sempre, per $\Omega=1$ rallenta asintoticamente, per $\Omega>1$ si arresta e l'universo ricollassa nel \textbf{Big Crunch}. Per un universo chiuso di sola materia la soluzione è una cicloide:
+\begin{equation}
+  a(\eta)=\frac{\Om}{2(\Om-1)}\,(1-\cos\eta),\qquad
+  t(\eta)=\frac{\Om}{2H_0(\Om-1)^{3/2}}\,(\eta-\sin\eta),
+\end{equation}
+da cui $a_{\max}=\Om/(\Om-1)$ (per $\eta=\pi$) e $t_{\text{crunch}}=\pi\Om/\big(H_0(\Om-1)^{3/2}\big)$ (per $\eta=2\pi$).
+Un universo chiuso è più giovane di uno piatto, che è più giovane di uno aperto (a parità di $H_0$).
+
+\subsection{Redshift e legge di Hubble}
+Un fotone emesso al tempo $t_e$ e osservato oggi ha
+\begin{equation}
+  1+z = \frac{\lambda_o}{\lambda_e} = \frac{a(t_0)}{a(t_e)} .
+\end{equation}
+Dal redshift si risale quindi all'epoca di emissione: per un universo di materia $t=t_0(1+z)^{-3/2}$.
+Derivando $d=a\,r$ si ottiene la legge di Hubble $v=\dot d=\dot a\,r=H\,d$; oggi $v=H_0\,d$.
+
+\subsection{Orizzonte della particella e raggio di Hubble}
+Il cono luce passato dell'osservatore è ``tagliato'' dal Big Bang: possiamo ricevere segnali solo da una distanza comovente finita, l'\emph{orizzonte della particella},
+\begin{equation}
+  \chi_p(t) = c\int_0^{t}\frac{dt'}{a(t')}, \qquad d_p(t)=a(t)\,\chi_p(t),
+\end{equation}
+che cresce con il tempo. Il \emph{raggio di Hubble} $d_H=c/H$ è invece la distanza oltre la quale la velocità di recessione supera $c$; in coordinate comoventi $r_H=c/(aH)=c/\dot a$.
+Regioni opposte della radiazione di fondo hanno la stessa temperatura pur non essendo mai state in contatto causale (problema dell'orizzonte): lo risolve l'inflazione, durante la quale $\dot a$ cresce e quindi il raggio di Hubble comovente si restringe.
+\emph{Nel simulatore:} vista ``Galassie e orizzonti'' (sezione~\ref{sec:galassie}).
+
+% ===========================================================================
+\section{Metodo numerico}
+% ===========================================================================
+
+\subsection{Perché integrare la seconda equazione}
+Dalla I si ricava $\dot a = H_0\,a\,\sqrt{E^2(a)}$, ma questa forma contiene una radice quadrata e quindi \emph{non può cambiare segno}: in un universo chiuso l'integrazione si blocca nel punto di inversione, dove $\dot a=0$, e non descrive il ricollasso. Lo stesso accade, andando indietro nel tempo, nei modelli con ``rimbalzo''.
+Il simulatore integra quindi la II, scritta come sistema del primo ordine nelle incognite $(a,\dot a)$:
+\begin{equation}
+  \frac{d}{dt}\begin{pmatrix}a\\ \dot a\end{pmatrix} =
+  \begin{pmatrix}\dot a\\[2pt] -\dfrac{H_0^2}{2}\Big[\,2\Or a^{-3} + \Om a^{-2} + (1+3w)\,\OL\, a^{-2-3w}\Big]\end{pmatrix},
+  \label{eq:sistema}
+\end{equation}
+ottenuta da $\ddot a = -\tfrac{H_0^2}{2}\sum_i\Omega_i(1+3w_i)\,a^{1-3(1+w_i)}$ (la curvatura non compare nella II). La I entra solo nelle condizioni iniziali.
+
+\subsection{Condizioni iniziali e unità}
+Si parte da oggi: $a(t_0)=1$, $\dot a(t_0)=H_0$ (perché $E^2(1)=1$ per costruzione). Le unità sono $\si{Gyr}$ per i tempi e $\si{km.s^{-1}.Mpc^{-1}}$ per $H$, con $1\,\si{km.s^{-1}.Mpc^{-1}}=\num{1.0227e-3}\,\si{Gyr^{-1}}$, quindi $1/H_0=\SI{13.97}{Gyr}$ per $H_0=70$.
+
+\subsection{Integrazione}
+Il sistema~\eqref{eq:sistema} viene integrato con \texttt{scipy.integrate.solve\_ivp} (tolleranza $10^{-8}$):
+\begin{itemize}
+  \item \textbf{all'indietro} da oggi, fino a $a=10^{-4}$ (Big Bang) oppure fino a $\dot a=0$ con $a>0$ (rimbalzo: nessun Big Bang);
+  \item \textbf{in avanti} fino all'orizzonte futuro scelto, oppure fino al ricollasso ($a\to0$) o alla divergenza ($a=10^3$, Big Rip).
+\end{itemize}
+Gli istanti notevoli (inversione, ricollasso, divergenza) sono individuati con gli \emph{eventi} dell'integratore. L'età è il tempo impiegato per tornare a $a\approx0$, più il piccolo tratto iniziale calcolato analiticamente.
+
+\subsection{Classificazione del passato e del futuro}
+\begin{table}[H]\centering\small
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\multicolumn{2}{@{}l}{\textbf{Origine} (passato)}\\
+Big Bang & $a\to0$ in un tempo finito: l'età è definita.\\
+Rimbalzo & $\dot a=0$ con $a=a_{\min}>0$: nessuna singolarità, età non definita.\\
+Passato infinito & $a\to0$ solo per $t\to-\infty$ (de Sitter): età non definita.\\
+\midrule
+\multicolumn{2}{@{}l}{\textbf{Destino} (futuro)}\\
+Big Crunch & $\dot a$ si annulla e l'universo ricollassa ($E^2(a)=0$ per qualche $a>1$).\\
+Big Rip & $w<-1$, $\OL>0$: $a\to\infty$ in un tempo finito.\\
+Espansione accelerata & espansione eterna con $q\to q_\infty<0$.\\
+Espansione eterna & espansione eterna con $q\geq0$ asintoticamente.\\
+\bottomrule
+\end{tabularx}
+\caption{Classificazione dei modelli. Il destino va stabilito in modo asintotico, non solo entro l'intervallo di tempo mostrato.}
+\end{table}
+
+\subsection{Grandezze derivate}
+Dalla soluzione $a(t),\dot a(t)$ si ricavano, per ogni istante: $H=\dot a/a$, $z=1/a-1$, $q=-\ddot a\,a/\dot a^2$, $\Omega_i(t)=\Omega_i a^{-3(1+w_i)}/E^2(a)$ e $\Ok(t)=\Ok a^{-2}/E^2(a)$; inoltre l'istante e il redshift di inizio dell'accelerazione (cambio di segno di $q$) e, nel modello chiuso, $a_{\max}$ e il tempo del Big Crunch.
+L'orizzonte della particella è calcolato nell'interfaccia integrando $\int dt/a$ lungo la soluzione: dove $a$ varia molto tra due campioni (vicino al Big Bang) ogni tratto è integrato assumendo localmente $a\propto t^n$, che è esatto per materia e radiazione. Per Einstein--de Sitter si ottiene $\chi_p(t_0)=2c/H_0$, il valore esatto.
+
+\subsection{Integratore di riserva}
+Se il server di calcolo non è attivo, l'interfaccia usa un integratore Runge--Kutta del quarto ordine a passo adattivo (passo proporzionale a $a/|\dot a|$) sullo stesso sistema~\eqref{eq:sistema}, e lo segnala con l'etichetta ``MOCK''. I due integratori sono stati confrontati su 80 modelli casuali.
+
+% ===========================================================================
+\section{Architettura del software}
+% ===========================================================================
+
+\begin{figure}[H]\centering
+\begin{tikzpicture}[node distance=1.3cm and 3.6cm, every node/.style={font=\small},
+  box/.style={draw, rounded corners=3pt, align=center, inner sep=6pt, minimum width=3.6cm}]
+  \node[box, fill=blu!6] (fe) {\textbf{Interfaccia (browser)}\\React + TypeScript\\Three.js (3D), Plotly (grafici)\\KaTeX (formule)};
+  \node[box, fill=viola!6, right=of fe] (be) {\textbf{Server di calcolo}\\Python, FastAPI\\NumPy, SciPy\\(\texttt{solve\_ivp})};
+  \node[box, below=of fe] (mock) {Integratore RK4\\di riserva};
+  \node[box, below=of be] (test) {Test automatici\\pytest + astropy};
+  \draw[-{Latex}] ([yshift=6pt]fe.east) -- node[above]{parametri (JSON)} ([yshift=6pt]be.west);
+  \draw[-{Latex}] ([yshift=-6pt]be.west) -- node[below]{$a(t)$, $H$, $q$, \dots} ([yshift=-6pt]fe.east);
+  \draw[dashed,-{Latex}] (fe) -- node[left,align=right]{se il server\\non risponde} (mock);
+  \draw[dashed] (be) -- (test);
+\end{tikzpicture}
+\caption{Struttura del simulatore. I due componenti comunicano tramite un contratto JSON documentato.}
+\end{figure}
+
+\begin{itemize}
+  \item \textbf{Server di calcolo} (\texttt{backend/}): espone \texttt{GET /api/health}, \texttt{POST /api/simulate} (integra un modello e restituisce le serie temporali e le grandezze derivate) e \texttt{POST /api/grid} (integra una famiglia di modelli al variare di un parametro, per la superficie 3D). Gli input sono validati (per esempio $H_0\in[20,150]$, $\OL\in[-2,5]$, $w\in[-2{,}5;0]$) e gli errori sono restituiti in italiano.
+  \item \textbf{Interfaccia} (\texttt{frontend/}): riceve i dati, gestisce lo stato (parametri, tempo corrente, modelli in confronto) e disegna scene 3D e grafici.
+  \item \textbf{Contratto} (\texttt{docs/API\_CONTRACT.md}): nomi, unità e significato di ogni campo; \textbf{verifica} (\texttt{docs/VERIFICA.md}): valori di riferimento.
+  \item \textbf{Avvio} (\texttt{avvia.py}): crea l'ambiente virtuale Python, installa le dipendenze, avvia server e interfaccia e apre il browser.
+\end{itemize}
+% Se il regolamento del corso lo richiede, dichiarare qui gli strumenti di IA usati nello sviluppo, ad esempio:
+% Il codice è stato sviluppato con il supporto di assistenti di programmazione basati su IA (Claude, Antigravity).
+
+% ===========================================================================
+\section{I componenti del simulatore}
+% ===========================================================================
+
+\subsection{Comandi e parametri}
+La scena 3D occupa tutto lo schermo. In alto si sceglie la pagina (Simulatore o Teoria) e la vista 3D; in basso c'è la linea del tempo e il pulsante ``Parametri e grafici'', che apre un pannello con:
+\begin{itemize}
+  \item \textbf{modelli predefiniti}, presi dalle lezioni (tabella~\ref{tab:preset});
+  \item i \textbf{parametri di oggi} $H_0$, $\Om$, $\OL$, $\Or$, $w$ (cursori e campi numerici); $\Ok=1-\Om-\Or-\OL$ e il segno di $k$ sono calcolati e mostrati subito;
+  \item la \textbf{composizione} $\Omega_i(t)$ al tempo del cursore, rispetto alla densità critica;
+  \item i \textbf{risultati}: destino, età (accanto al valore misurato di \SI{13.8}{Gyr}), $q_0$, geometria, tempo di Hubble $1/H_0$, redshift di inizio dell'accelerazione, $\rho_{c,0}$, $a_{\max}$ o $a_{\min}$ quando esistono;
+  \item il \textbf{confronto}: i modelli aggiunti restano sovrapposti nel grafico di $a(t)$.
+\end{itemize}
+
+\begin{table}[H]\centering\small
+\begin{tabularx}{\linewidth}{@{}lccccX@{}}
+\toprule
+Modello & $H_0$ & $\Om$ & $\OL$ & $\Or$ & Cosa mostra\\
+\midrule
+$\Lambda$CDM (Planck 2018) & 67,66 & 0,3111 & 0,6889 & $9\!\times\!10^{-5}$ & il modello standard\\
+Einstein--de Sitter & 70 & 1 & 0 & 0 & $a\propto t^{2/3}$, problema dell'età\\
+Solo radiazione & 70 & 0 & 0 & 1 & $a\propto t^{1/2}$, universo primordiale\\
+de Sitter & 70 & 0 & 1 & 0 & $a\propto e^{Ht}$, nessun Big Bang\\
+Anti-de Sitter & 70 & 0 & $-0{,}5$ & 0 & $\Lambda<0$, ricollasso\\
+Aperto, solo materia & 70 & 0,3 & 0 & 0 & $k=-1$, espansione eterna\\
+Chiuso, solo materia & 70 & 3 & 0 & 0 & $k=+1$, Big Crunch\\
+Solo materia visibile & 70 & 0,03 & 0 & 0 & senza materia ed energia oscura\\
+\bottomrule
+\end{tabularx}
+\caption{Modelli predefiniti ($w=-1$ in tutti).}
+\label{tab:preset}
+\end{table}
+
+\subsection{Vista ``Spazio curvo''}\label{sec:spazio}
+\begin{figure}[H]\centering
+\includegraphics[width=\linewidth]{fig/tre_geometrie.png}
+\caption{Le tre geometrie di Robertson--Walker allo stesso fattore di scala: sfera ($k=+1$), piano ($k=0$), sella ($k=-1$).}
+\end{figure}
+Uno spazio curvo tridimensionale non si può disegnare: la griglia rappresenta lo spazio \emph{con una dimensione in meno} (sfera, piano o sella, secondo il segno di $k$ del modello scelto). Le galassie hanno coordinate comoventi fisse sulla griglia; quando si fa scorrere il tempo la griglia si dilata di un fattore $a(t)$ e le galassie si allontanano tutte da tutte. Un anello tratteggiato indica la dimensione di oggi ($a=1$).
+Per un universo curvo è indicato anche il raggio di curvatura di oggi, $R_0=c/(H_0\sqrt{|\Ok|})$.
+
+Due scelte rappresentano la fisica:
+\begin{itemize}
+  \item la \textbf{posizione} delle galassie scala con $a(t)$, la loro \textbf{dimensione no}: le galassie sono sistemi legati dalla gravità e non partecipano all'espansione (le dimensioni sono ingrandite per essere visibili);
+  \item prima di $a\approx1/11$ ($z\approx10$, qualche centinaio di milioni di anni dopo il Big Bang) le galassie non si sono ancora formate e la scena mostra solo materia diffusa.
+\end{itemize}
+
+\subsection{Vista ``Galassie e orizzonti''}\label{sec:galassie}
+\begin{figure}[H]\centering
+\includegraphics[width=0.49\linewidth]{fig/galassie_fisiche.png}\hfill
+\includegraphics[width=0.49\linewidth]{fig/galassie_comoventi_futuro.png}
+\caption{A sinistra: oggi, in distanze fisiche; la sfera rossa è il raggio di Hubble, quella arancione l'orizzonte della particella. A destra: lo stesso modello $\Lambda$CDM 25 miliardi di anni nel futuro, in coordinate comoventi: il raggio di Hubble comovente si è ristretto.}
+\end{figure}
+Circa \num{1600} galassie occupano una regione di raggio $3{,}6\,c/H_0$; noi siamo al centro. Il colore indica la velocità di recessione $v/c=H\,d/c$ (blu lento, rosso oltre $c$), e le galassie oltre l'orizzonte della particella sono grigie perché la loro luce non ci ha ancora raggiunto. Si può passare da \emph{distanze fisiche} ($d=a\,r$, tutto si espande) a \emph{coordinate comoventi} (le galassie stanno ferme e si vedono variare le due sfere), e mostrare le frecce $v=H\,d$.
+Per $\Lambda$CDM oggi si ottiene un orizzonte di circa 46 miliardi di anni luce e un raggio di Hubble di \num{14.5} miliardi di anni luce. Nell'era accelerata il raggio di Hubble comovente si restringe, e sempre più galassie si allontanano più velocemente della luce: è lo stesso meccanismo dell'inflazione.
+
+\subsection{Vista ``Superficie $a(t,\text{parametro})$''}
+\begin{figure}[H]\centering
+\includegraphics[width=0.8\linewidth]{fig/superficie_crop.png}
+\caption{Famiglia di universi di sola materia con $\Om$ da 0,05 a 3: ogni sezione a $\Om$ fissato è una soluzione $a(t)$. Per $\Om>1$ le curve tornano a zero (Big Crunch); la linea rossa è ``oggi'', $a=1$.}
+\end{figure}
+Ogni sezione della superficie è una soluzione delle equazioni di Friedmann: un parametro varia, gli altri restano fissi. Sono disponibili quattro famiglie (da aperto a chiuso senza $\Lambda$; universi piatti con $\Om+\OL=1$; quantità di energia oscura; equazione di stato $w$) o una famiglia personalizzata a partire dai parametri del pannello.
+
+\subsection{Grafici e linea del tempo}
+\begin{figure}[H]\centering
+\includegraphics[width=\linewidth]{fig/pannello_chiuso.png}
+\caption{Pannello aperto con il modello chiuso ($\Om=3$): parametri, $a(t)$ fino al Big Crunch e $\Omega_i(t)$.}
+\end{figure}
+Il grafico principale mostra $a(t)$ (in funzione di $t-t_0$ oppure del tempo dal Big Bang, anche in scala logaritmica), con i modelli in confronto; il secondo grafico mostra a scelta $\Omega_i(t)$, $H(t)$ (con $|H|$ tratteggiato durante la contrazione) o $q(t)$ (con l'area di accelerazione evidenziata).
+La linea del tempo, sempre visibile, ha un pulsante di riproduzione con velocità regolabile e segna gli eventi notevoli (Big Bang, inizio dell'accelerazione, oggi, inversione, Big Crunch); accanto mostra $t$, $a$, $z$ e $H$ al tempo corrente. Scena 3D, grafici e composizione seguono tutti lo stesso cursore.
+
+\subsection{Pagina ``Teoria''}
+Riassume le equazioni delle lezioni (sezione~2 di questa relazione) con pulsanti che caricano il modello corrispondente nel simulatore: per esempio ``Einstein--de Sitter'' accanto al problema dell'età, ``de Sitter: il raggio di Hubble si restringe'' accanto all'orizzonte.
+
+% ===========================================================================
+\section{Risultati e verifica}
+% ===========================================================================
+
+\begin{figure}[H]\centering
+\includegraphics[width=0.82\linewidth]{fig/a_t_modelli.pdf}
+\caption{Fattore di scala per i modelli delle lezioni, allineati a oggi ($a=1$ per $t=t_0$). Per $t<t_0$ si legge l'età (dove la curva tocca $a=0$): l'universo chiuso è il più giovane, de Sitter non ha un inizio.}
+\end{figure}
+
+\begin{figure}[H]\centering
+\includegraphics[width=0.95\linewidth]{fig/omega_q_lcdm.pdf}
+\caption{$\Lambda$CDM. A sinistra: epoche di radiazione, materia ed energia oscura in funzione di $a$. A destra: il parametro di decelerazione cambia segno a $t\approx\SI{7.7}{Gyr}$ ($z\approx0{,}64$), cioè circa 6 miliardi di anni fa.}
+\end{figure}
+
+I risultati del server di calcolo sono stati confrontati con tre riferimenti indipendenti: le soluzioni analitiche, la libreria \texttt{astropy.cosmology} e l'integratore di riserva dell'interfaccia.
+
+\begin{table}[H]\centering\small
+\begin{tabular}{@{}lccccl@{}}
+\toprule
+Modello ($\Or=0$) & età attesa & età simulatore & $q_0$ & destino & note\\
+\midrule
+$\Lambda$CDM (Planck 2018) & 13,792 & 13,792 & $-0{,}533$ & accelerata & $z_{\text{acc}}=0{,}64$\\
+Einstein--de Sitter & 9,312 & 9,312 & $0{,}500$ & eterna & $=2/(3H_0)$\\
+Aperto, $\Om=0{,}3$ & 11,298 & 11,298 & $0{,}150$ & eterna & \\
+Chiuso, $\Om=3$ & 7,170 & 7,170 & $1{,}500$ & Big Crunch & $a_{\max}=1{,}5$; $t_{\text{crunch}}=46{,}55$\\
+Solo barioni & 13,331 & 13,331 & $0{,}015$ & eterna & \\
+Fantasma, $w=-1{,}5$ & 14,273 & 14,273 & $-1{,}075$ & Big Rip & \\
+Anti-de Sitter & 12,158 & 12,158 & $0{,}500$ & Big Crunch & $a_{\max}=\sqrt3$; $t_{\text{crunch}}=62{,}06$\\
+Solo radiazione & 6,984 & 6,984 & $1{,}000$ & eterna & $=1/(2H_0)$\\
+de Sitter & --- & --- & $-1{,}000$ & accelerata & passato infinito\\
+Rimbalzo, $\OL=1{,}9$ & --- & --- & $-1{,}750$ & accelerata & $a_{\min}=0{,}611$\\
+\bottomrule
+\end{tabular}
+\caption{Confronto con i valori di riferimento (tempi in \si{Gyr}, $H_0=70$ salvo $\Lambda$CDM). Le età attese sono calcolate con \texttt{astropy} e, dove esistono, con le formule analitiche; coincidono con il simulatore alla terza cifra decimale.}
+\end{table}
+
+\paragraph{Verifica esterna.} Lo stesso controllo si può fare con il calcolatore cosmologico di E.~L.~Wright (Wright 2006): con $H_0=67{,}66$, $\Om=0{,}3111$ e universo piatto l'età è di circa \SI{13.8}{Gyr}, come nel simulatore.
+
+% ===========================================================================
+\section{Limiti e possibili estensioni}
+% ===========================================================================
+\begin{itemize}
+  \item Il modello è omogeneo e isotropo: descrive l'espansione media, non la formazione delle strutture. Le posizioni delle galassie nelle scene sono casuali e le loro dimensioni non sono in scala.
+  \item La curvatura è rappresentata con una superficie bidimensionale immersa nello spazio tridimensionale: è un'analogia didattica, non uno spazio 3D curvo.
+  \item L'equazione di stato dell'energia oscura è costante; un'estensione naturale è $w(a)=w_0+w_a(1-a)$.
+  \item Non sono calcolate le distanze osservative (di luminosità, di diametro angolare), che non sono state trattate nel corso; la struttura del codice permette di aggiungerle.
+\end{itemize}
+
+% ===========================================================================
+\section{Conclusioni}
+% ===========================================================================
+Il simulatore risolve le equazioni di Friedmann per qualunque combinazione di materia, radiazione, energia oscura e curvatura, integrando la seconda equazione per seguire correttamente l'inversione dell'espansione e i casi senza Big Bang. Le visualizzazioni 3D mostrano i concetti delle lezioni --- la geometria dello spazio, l'espansione, la legge di Hubble, gli orizzonti --- legati in tempo reale alla soluzione numerica, e i risultati sono verificati con soluzioni analitiche e con strumenti di riferimento.
+
+\appendix
+
+% ===========================================================================
+\section{Traccia per la presentazione (circa 10 minuti)}
+% ===========================================================================
+
+\begin{enumerate}[leftmargin=*,label=\textbf{\arabic*.}]
+  \item \textbf{Introduzione (1 min).} ``Ho realizzato un simulatore che, dati i parametri di oggi, risolve le equazioni di Friedmann e mostra l'evoluzione dell'universo in 3D.'' Avviare con \texttt{python avvia.py}.
+  \item \textbf{$\Lambda$CDM e lo spazio curvo (2 min).} Vista ``Spazio curvo'' con $\Lambda$CDM: spiegare che la griglia è lo spazio con una dimensione in meno e che è piatto perché $\Ok\approx0$. Premere \emph{play}: lo spazio si dilata, le galassie si allontanano ma non si ingrandiscono. Prima di $z\approx10$ le galassie non ci sono.
+  \item \textbf{Le tre geometrie (1 min).} ``Confronta $k=+1,0,-1$'': collegare a $\operatorname{sgn}(\Omega-1)=\operatorname{sgn}k$.
+  \item \textbf{Il problema dell'età (2 min).} Aprire il pannello, scegliere $\Lambda$CDM e aggiungerlo al confronto; poi Einstein--de Sitter: l'età scende da 13,8 a 9,3 miliardi di anni ($t_0=2/3H_0$). Serve l'energia oscura.
+  \item \textbf{Il Big Crunch (1 min).} Modello chiuso: $a(t)$ sale fino a $a_{\max}=1{,}5$ e torna a zero; $H$ diventa negativo. Spiegare perché si integra la II equazione.
+  \item \textbf{L'accelerazione (1 min).} Grafico $q(t)$ in $\Lambda$CDM: $q$ cambia segno circa 6 miliardi di anni fa; condizione $w<-1/3$.
+  \item \textbf{Galassie e orizzonti (1,5 min).} Legge di Hubble, raggio di Hubble, orizzonte della particella; in coordinate comoventi il raggio di Hubble si restringe nel futuro (come durante l'inflazione).
+  \item \textbf{Superficie e verifica (0,5 min).} La superficie $a(t,\Om)$; i numeri coincidono con \texttt{astropy} e con le formule analitiche.
+\end{enumerate}
+
+% ===========================================================================
+\section{Domande probabili}
+% ===========================================================================
+
+\begin{orale}
+\textbf{Perché non integra direttamente la prima equazione?}\\
+Perché dà $\dot a=H_0a\sqrt{E^2(a)}$, sempre positivo: non può descrivere un universo che smette di espandersi e ricollassa. La seconda equazione contiene $\ddot a$ e segue l'inversione; la prima serve per le condizioni iniziali ($\dot a(t_0)=H_0$).
+\end{orale}
+
+\begin{orale}
+\textbf{Anche le galassie (e il Sistema Solare) si espandono?}\\
+No: sono sistemi legati dalla gravità e la loro dinamica interna domina sull'espansione. Si allontanano le une dalle altre, ma non crescono di dimensione: nel simulatore cambia la posizione, non la grandezza.
+\end{orale}
+
+\begin{orale}
+\textbf{Cos'è la griglia nella vista 3D?}\\
+È lo spazio, disegnato con una dimensione in meno: piano per $k=0$, sfera per $k=+1$, sella per $k=-1$. Le galassie sono ferme nelle coordinate comoventi; è la griglia che si dilata con $a(t)$.
+\end{orale}
+
+\begin{orale}
+\textbf{Cosa succede se $\Omega>1$?}\\
+Per la (\ref{eq:segno}) $k=+1$: lo spazio è chiuso e, senza $\Lambda$, l'espansione si arresta a $a_{\max}=\Om/(\Om-1)$ e l'universo ricollassa. Con abbastanza $\Lambda$ anche un universo chiuso può espandersi per sempre.
+\end{orale}
+
+\begin{orale}
+\textbf{Che differenza c'è tra raggio di Hubble e orizzonte della particella?}\\
+Il raggio di Hubble $c/H$ è dove la velocità di recessione vale $c$; l'orizzonte della particella è la distanza da cui la luce ha fatto in tempo ad arrivarci dal Big Bang. Oggi l'orizzonte (circa 46 miliardi di anni luce) è più grande del raggio di Hubble (circa 14,5): vediamo galassie che oggi si allontanano più veloci della luce, perché la luce che riceviamo è partita quando erano più vicine.
+\end{orale}
+
+\begin{orale}
+\textbf{Si può simulare l'universo statico di Einstein?}\\
+No, con questi parametri: il simulatore fissa le condizioni a oggi con $H_0>0$, mentre un universo statico ha $H=0$. Si può però mostrare che l'equilibrio richiede $\Lambda c^2=4\pi G\rho$ e $k=+1$, ed è instabile.
+\end{orale}
+
+\begin{orale}
+\textbf{Come sa che i risultati sono giusti?}\\
+Per i casi con soluzione analitica (Einstein--de Sitter, radiazione, chiuso, anti-de Sitter) il confronto è esatto; per gli altri l'età coincide con \texttt{astropy} alla terza cifra decimale, e il risultato di $\Lambda$CDM (\SI{13.79}{Gyr}) coincide con il valore di Planck 2018.
+\end{orale}
+
+% ===========================================================================
+\begin{thebibliography}{99}\small
+\bibitem{lezioni} C.~Daffara, \emph{Elementi di Cosmologia e Relatività Generale}, lezioni 1--3, Università di Verona, A.A.\ 2025/2026.
+\bibitem{ryden} B.~Ryden, \emph{Introduction to Cosmology}, 2\textsuperscript{a} ed., Cambridge University Press, 2017.
+\bibitem{friedmann} A.~Friedmann, Über die Krümmung des Raumes, \emph{Zeitschrift für Physik} \textbf{10}, 377--386 (1922).
+\bibitem{cpt} S.~M.~Carroll, W.~H.~Press, E.~L.~Turner, The cosmological constant, \emph{Annual Review of Astronomy and Astrophysics} \textbf{30}, 499--542 (1992).
+\bibitem{riess} A.~G.~Riess et al., Observational evidence from supernovae for an accelerating universe and a cosmological constant, \emph{The Astronomical Journal} \textbf{116}, 1009 (1998).
+\bibitem{perlmutter} S.~Perlmutter et al., Measurements of $\Omega$ and $\Lambda$ from 42 high-redshift supernovae, \emph{The Astrophysical Journal} \textbf{517}, 565 (1999).
+\bibitem{caldwell} R.~R.~Caldwell, M.~Kamionkowski, N.~N.~Weinberg, Phantom energy: dark energy with $w<-1$ causes a cosmic doomsday, \emph{Physical Review Letters} \textbf{91}, 071301 (2003).
+\bibitem{planck} Planck Collaboration, Planck 2018 results. VI. Cosmological parameters, \emph{Astronomy \& Astrophysics} \textbf{641}, A6 (2020).
+\bibitem{wright} E.~L.~Wright, A cosmology calculator for the World Wide Web, \emph{Publications of the Astronomical Society of the Pacific} \textbf{118}, 1711 (2006).
+\bibitem{scipy} P.~Virtanen et al., SciPy 1.0: fundamental algorithms for scientific computing in Python, \emph{Nature Methods} \textbf{17}, 261--272 (2020).
+\bibitem{astropy} Astropy Collaboration, The Astropy Project: sustaining and growing a community-oriented open-source project, \emph{The Astrophysical Journal} \textbf{935}, 167 (2022).
+\bibitem{three} Three.js, libreria JavaScript per la grafica 3D, \url{https://threejs.org}.
+\end{thebibliography}
+
+\end{document}
