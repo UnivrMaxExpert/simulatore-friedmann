@@ -273,3 +273,16 @@ button, input, select { font: inherit; color: inherit; }
   .readout { grid-column: 1 / -1; flex-wrap: wrap; }
 }
 @media (prefers-reduced-motion: reduce) { .drawer-body { animation: none; } .drawer-toggle svg { transition: none; } }
+
+/* Formule ↔ simulatore */
+.checks { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--r-md); overflow: hidden; }
+.checks li { background: #0B1120; padding: 8px 11px; break-inside: avoid; }
+.check-head { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; }
+.check-head em { font-style: normal; color: var(--muted); font-size: 12px; }
+.check-mark { font-weight: 700; color: var(--green); }
+.checks li[data-ok='false'] .check-mark { color: var(--amber); }
+.check-formula { font-family: var(--serif); font-size: 15px; margin: 3px 0 2px; overflow-wrap: anywhere; }
+.check-vals { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12.5px; }
+.check-vals b { font-weight: 600; }
+.checks li[data-ok='false'] .check-vals b { color: var(--amber); }
+.check-src { font-size: 11.5px; color: var(--muted); margin-top: 2px; }

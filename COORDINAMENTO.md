@@ -208,3 +208,7 @@ Aggiunti i 3 test a `backend/tests/test_reference.py` (26/26 test passati).
 ### 2026-10-15 21:30 [CLAUDE] Node.js installato in automatico (sostituisce la voce delle 21:20)
 - Tolta la versione compilata (`frontend/dist`, `avvia_app.py` → `_archivio/versione_compilata/`, esclusa da git).
 - `avvia.py`: se `npm` non c'è, su Windows esegue `winget install -e --id OpenJS.NodeJS.LTS` e lo usa subito (cerca `npm.cmd` in Program Files senza riaprire il terminale). `avvia.bat` installa Python con winget se manca.
+
+### 2026-10-15 23:40 [CLAUDE] Riquadro «Formule ↔ simulatore» + verifica ISSUE-6
+- Nuovo `frontend/src/physics/check.ts` + `components/Checks.tsx` (nel pannello, dopo «Risultati»): per il modello scelto ricalcola in modo indipendente H = H₀E(a) e Ωm(t) al cursore, a(t) esatta (EdS, radiazione, de Sitter, ΛCDM piatto con Ωr = 0, anti-de Sitter), q₀, età (esatta o ∫₀¹ da/(aH₀E)), a_max, t_crunch, z_acc, e li confronta con i valori del backend. Su tutti i preset: differenze < 1e-5 (z_acc ΛCDM 8e-4 per la radiazione trascurata).
+- ISSUE-6 verificata risolta con il backend attuale (Ωm = 1,1 → big_crunch, t_end 1526 Gyr). Nota per Antigravity: vicino al Big Rip (a > 1000, ultimi 2 campioni) H della serie si stacca da H₀E(a) di qualche %: non blocca nulla, il frontend confronta solo fino ad a = 1000.

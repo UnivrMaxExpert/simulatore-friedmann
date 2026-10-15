@@ -1,4 +1,5 @@
 import { useStore, sampleNullable } from '../store/useStore'
+import Checks from './Checks'
 import type { CosmoParams } from '../api/types'
 import { COLORS, FATE_LABEL, FATE_TEXT, GEOMETRY_LABEL, ORIGIN_LABEL, fmt, fmtSmart } from '../format'
 
@@ -121,6 +122,8 @@ export default function Sidebar() {
           {result!.warnings.filter(w => !w.includes('MOCK')).map(w => <p key={w} className="warn">{w}</p>)}
         </div>
       )}
+
+      <Checks />
 
       <div className="section">
         <h2>Confronto</h2>

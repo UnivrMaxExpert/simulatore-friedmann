@@ -364,6 +364,14 @@ Ogni sezione della superficie è una soluzione delle equazioni di Friedmann: un 
 Il grafico principale mostra $a(t)$ (in funzione di $t-t_0$ oppure del tempo dal Big Bang, anche in scala logaritmica), con i modelli in confronto; il secondo grafico mostra a scelta $\Omega_i(t)$, $H(t)$ (con $|H|$ tratteggiato durante la contrazione) o $q(t)$ (con l'area di accelerazione evidenziata).
 La linea del tempo, sempre visibile, ha un pulsante di riproduzione con velocità regolabile e segna gli eventi notevoli (Big Bang, inizio dell'accelerazione, oggi, inversione, Big Crunch); accanto mostra $t$, $a$, $z$ e $H$ al tempo corrente. Scena 3D, grafici e composizione seguono tutti lo stesso cursore.
 
+\subsection{Riquadro ``Formule $\leftrightarrow$ simulatore''}
+Nel pannello, per il modello scelto, le grandezze calcolate dal simulatore (che integra la II equazione) sono messe accanto agli stessi valori ricavati in modo indipendente dalle formule delle lezioni, con la differenza relativa:
+\begin{itemize}
+  \item al tempo del cursore: $H=H_0E(a)$ dalla I equazione, $\Omega_m(t)=\Om a^{-3}/E^2(a)$ dalla III, e $a(t)$ dalla soluzione esatta quando esiste (Einstein--de Sitter, radiazione, de Sitter, $\Lambda$CDM piatto senza radiazione, anti-de Sitter);
+  \item oggi: $q_0=\Or+\Om/2+\tfrac{1+3w}{2}\OL$; l'età dalla soluzione esatta o, negli altri casi, dall'integrale $t_0=\int_0^1 da/(aH_0E)$; $a_{\max}$ e $t_{\text{crunch}}$ per i modelli che ricollassano; $z_{\text{acc}}$ dalla condizione $\ddot a=0$.
+\end{itemize}
+Per tutti i modelli predefiniti le differenze relative sono inferiori a $10^{-5}$; l'unica eccezione è $z_{\text{acc}}$ in $\Lambda$CDM ($8\times10^{-4}$), perché la formula trascura la piccola componente di radiazione.
+
 \subsection{Pagina ``Teoria''}
 Riassume le equazioni delle lezioni (sezione~2 di questa relazione) con pulsanti che caricano il modello corrispondente nel simulatore: per esempio ``Einstein--de Sitter'' accanto al problema dell'età, ``de Sitter: il raggio di Hubble si restringe'' accanto all'orizzonte.
 

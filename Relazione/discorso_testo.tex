@@ -84,7 +84,9 @@ In coordinate comoventi, andando nel futuro, il raggio di Hubble si restringe: s
 Questa superficie riassume tutto: ogni sezione è una soluzione delle equazioni di Friedmann al variare di $\Omega_m$. Per $\Omega_m > 1$ le curve tornano a zero: il Big Crunch.
 
 Il programma ha due parti. Il server di calcolo, in Python, integra la seconda equazione partendo da oggi, con $a = 1$ e $\dot a = H_0$, sia all'indietro fino al Big Bang sia in avanti, con un integratore Runge--Kutta adattivo di SciPy; riconosce gli eventi notevoli e classifica l'origine e il destino. L'interfaccia, nel browser, mostra i risultati in 3D e nei grafici.
-Abbiamo verificato i risultati con le soluzioni analitiche --- Einstein--de Sitter, solo radiazione, universo chiuso, anti-de Sitter --- e con la libreria \texttt{astropy}: le età coincidono alla terza cifra decimale.
+\demo{Aprire il pannello, riquadro ``Formule $\leftrightarrow$ simulatore''; cambiare modello e muovere la linea del tempo.}
+Per mostrare che i numeri sono quelli delle formule, il simulatore ricalcola in tempo reale le stesse grandezze in modo indipendente: $H$ dalla prima equazione, $q_0 = \Omega_r + \Omega_m/2 + \frac{1+3w}{2}\Omega_\Lambda$, l'età e $a(t)$ dalle soluzioni esatte quando esistono, $a_{\max}$ e il tempo del Big Crunch per l'universo chiuso. Cambiando modello o spostando il cursore, formula e simulazione coincidono: le differenze sono in genere sotto lo $0{,}001\%$.
+Abbiamo anche confrontato i risultati con la libreria \texttt{astropy}: le età coincidono alla terza cifra decimale.
 
 \subsection*{10. Chiusura \hfill\normalfont\small 20 s}
 In sintesi: con le sole equazioni di Friedmann e cinque parametri si ottengono il Big Bang, il ricollasso, l'espansione eterna e quella accelerata, e il simulatore mostra ogni caso collegato alla sua formula.
