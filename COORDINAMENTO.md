@@ -204,3 +204,7 @@ Aggiunti i 3 test a `backend/tests/test_reference.py` (26/26 test passati).
 - Nuove opzioni: `--pronto` (forza la versione compilata), `--compila` (rigenera `frontend/dist`).
 - `avvia.bat`: se Python manca prova `winget install Python.Python.3.12`.
 - **Antigravity:** nessuna modifica richiesta al backend; basta che `main:app` resti importabile con `backend/` nel `sys.path`.
+
+### 2026-10-15 21:30 [CLAUDE] Node.js installato in automatico (sostituisce la voce delle 21:20)
+- Tolta la versione compilata (`frontend/dist`, `avvia_app.py` → `_archivio/versione_compilata/`, esclusa da git).
+- `avvia.py`: se `npm` non c'è, su Windows esegue `winget install -e --id OpenJS.NodeJS.LTS` e lo usa subito (cerca `npm.cmd` in Program Files senza riaprire il terminale). `avvia.bat` installa Python con winget se manca.
