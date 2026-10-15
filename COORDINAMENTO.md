@@ -198,3 +198,9 @@ Aggiunti i 3 test a `backend/tests/test_reference.py` (26/26 test passati).
 - Etichette 3D nella scena: «spazio piatto/chiuso/aperto», «oggi, a = 1», «raggio di Hubble: oltre, v > c», «orizzonte: il limite di ciò che vediamo», «noi». Testo esplicativo: la griglia è lo spazio disegnato con una dimensione in meno.
 - Corretto il calcolo dell'orizzonte della particella con la serie del backend (primo tratto a = 1e-4 → 0.016 integrato con legge di potenza locale invece dei trapezi): EdS = 2.000 c/H0 (esatto), ΛCDM ≈ 45.8 Gly (astropy 46.2).
 - Nessun impatto sul backend né sul contratto.
+
+### 2026-10-15 21:20 [CLAUDE] Avvio senza Node.js
+- `frontend/dist` (build di produzione) ora è nel repository. Se Node.js non c'è, `avvia.py` avvia `avvia_app.py`: il backend (`backend/main.py`) + `StaticFiles(frontend/dist)` montati su `/` dopo le rotte `/api/*`, tutto sulla porta 8000. Se il backend non parte, serve `dist` con `python -m http.server` → interfaccia in MOCK.
+- Nuove opzioni: `--pronto` (forza la versione compilata), `--compila` (rigenera `frontend/dist`).
+- `avvia.bat`: se Python manca prova `winget install Python.Python.3.12`.
+- **Antigravity:** nessuna modifica richiesta al backend; basta che `main:app` resti importabile con `backend/` nel `sys.path`.

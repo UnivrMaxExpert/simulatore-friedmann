@@ -4,13 +4,16 @@ Simulatore della dinamica dell'universo basato sulle equazioni di Friedmann, con
 Progetto per il corso *Elementi di Cosmologia e Relatività Generale* — Università di Verona.
 
 ## Avvio (un solo comando)
-Prerequisiti: **Python ≥ 3.9** e **Node.js ≥ 18** installati.
+Prerequisito: **Python ≥ 3.9** (su Windows, se manca, `avvia.bat` prova a installarlo da solo con winget).
 
 ```bash
 python avvia.py
 ```
-Al primo avvio crea l'ambiente virtuale, installa le dipendenze (qualche minuto) e apre il browser su `http://localhost:5173`.
-Su Windows si può anche fare doppio clic su `avvia.bat`. `Ctrl+C` chiude tutto.
+Su Windows basta il doppio clic su `avvia.bat`. Al primo avvio crea l'ambiente virtuale e installa le dipendenze Python (qualche minuto, serve Internet), poi apre il browser. `Ctrl+C` chiude tutto.
+
+- **Senza Node.js** usa l'interfaccia già compilata in `frontend/dist`, servita dal backend su `http://127.0.0.1:8000`.
+- **Con Node.js ≥ 18** avvia l'interfaccia in modalità sviluppo su `http://127.0.0.1:5173` (le modifiche al codice si vedono subito).
+- Dopo aver modificato `frontend/src`, `python avvia.py --compila` aggiorna `frontend/dist` (da includere nel commit).
 
 ## Struttura
 ```
@@ -18,7 +21,7 @@ backend/     API FastAPI + fisica (NumPy/SciPy)     → Antigravity
 frontend/    Webapp React + Three.js + Plotly        → Claude
 docs/        Contratto API
 COORDINAMENTO.md   decisioni, stato, problemi, log tra i due agenti (unico file di coordinamento)
-avvia.py     avvio con un comando
+avvia.py     avvio con un comando (avvia_app.py: backend + interfaccia compilata)
 _archivio/   versioni precedenti non più usate
 ```
 

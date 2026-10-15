@@ -6,9 +6,12 @@ Avvio con un solo comando del Simulatore di Friedmann.
     python avvia.py --mock       solo frontend, fisica simulata nel browser
     python avvia.py --no-browser non aprire il browser
     python avvia.py --reload     backend con auto-reload (utile mentre si sviluppa)
+    python avvia.py --pronto     usa l'interfaccia già compilata (frontend/dist), anche se Node.js c'è
+    python avvia.py --compila    ricompila frontend/dist (serve Node.js), da fare prima di un commit
 
-Al primo avvio crea .venv, installa backend/requirements.txt e fa npm install in frontend/.
-Prerequisiti: Python >= 3.9 e Node.js >= 18.
+Al primo avvio crea .venv e installa backend/requirements.txt.
+Prerequisito: Python >= 3.9. Node.js (>= 18) serve solo per modificare l'interfaccia: senza Node.js
+si usa la versione già compilata in frontend/dist, servita dal backend sulla porta 8000.
 """
 from __future__ import annotations
 
@@ -28,6 +31,7 @@ ROOT = Path(__file__).resolve().parent
 BACKEND = ROOT / "backend"
 FRONTEND = ROOT / "frontend"
 VENV = ROOT / ".venv"
+DIST = FRONTEND / "dist"
 IS_WIN = os.name == "nt"
 BACKEND_PORT = 8000
 FRONTEND_PORT = 5173
@@ -97,10 +101,11 @@ def setup_backend() -> bool:
     return True
 
 
-def setup_frontend() -> str:
-    npm = shutil.which("npm.cmd" if IS_WIN else "npm") or shutil.which("npm")
-    if not npm:
-        die("Node.js/npm non trovato. Installa Node.js 18 o superiore da https://nodejs.org e riapri il terminale.")
+def find_npm() -> str | None:
+    return shutil.which("npm.cmd" if IS_WIN else "npm") or shutil.which("npm")
+
+
+def setup_frontend(npm: str) -> str:
     marker = FRONTEND / "node_modules" / ".package-lock.json"
     pkg = FRONTEND / "package.json"
     if not marker.exists() or marker.stat().st_mtime < pkg.stat().st_mtime:
@@ -126,15 +131,75 @@ def stop(proc: subprocess.Popen | None) -> None:
         proc.kill()
 
 
+def open_browser(url: str, args) -> None:
+    say(f"Pronto: {url}   (Ctrl+C per chiudere)")
+    if not args.no_browser:
+        webbrowser.open(url)
+
+
+def run_prebuilt(args) -> None:
+    """Senza Node.js: backend + interfaccia compilata sulla stessa porta (avvia_app.py)."""
+    if port_in_use(BACKEND_PORT):
+        die(f"La porta {BACKEND_PORT} è occupata: probabilmente il simulatore è già aperto in un altro terminale.")
+    proc = None
+    try:
+        if not args.mock and setup_backend():
+            say(f"Avvio il simulatore (versione già compilata) su http://127.0.0.1:{BACKEND_PORT}")
+            env = dict(os.environ, AVVIA_BACKEND=(backend_module() or "main:app").split(":")[0])
+            proc = start([str(venv_python()), "-m", "uvicorn", "avvia_app:app", "--host", "127.0.0.1", "--port", str(BACKEND_PORT)], ROOT, env)
+            if not wait_port(BACKEND_PORT, 40, proc):
+                say("Il backend non è partito (vedi errori sopra): apro l'interfaccia in modalità MOCK.")
+                stop(proc)
+                proc = None
+        if proc is None:
+            # solo l'interfaccia, con il server web di Python: la fisica la calcola il browser
+            proc = start([sys.executable, "-m", "http.server", str(BACKEND_PORT), "--bind", "127.0.0.1", "--directory", str(DIST)], ROOT)
+            if not wait_port(BACKEND_PORT, 15, proc):
+                die("Non riesco ad avviare il server dell'interfaccia: controlla i messaggi sopra.")
+        open_browser(f"http://127.0.0.1:{BACKEND_PORT}", args)
+        while proc.poll() is None:
+            time.sleep(1)
+        say("Il server si è chiuso.")
+    except KeyboardInterrupt:
+        print()
+        say("Chiudo…")
+    finally:
+        stop(proc)
+
+
+def build_frontend(npm: str) -> None:
+    setup_frontend(npm)
+    run([npm, "run", "build"], FRONTEND, "Compilo l'interfaccia in frontend/dist")
+    say("Fatto: frontend/dist è aggiornata (ricordati di includerla nel commit).")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description="Avvia il Simulatore di Friedmann")
     ap.add_argument("--mock", action="store_true", help="solo frontend, fisica simulata nel browser")
     ap.add_argument("--no-browser", action="store_true", help="non aprire il browser")
     ap.add_argument("--reload", action="store_true", help="backend con auto-reload")
+    ap.add_argument("--pronto", action="store_true", help="usa l'interfaccia già compilata anche se Node.js è installato")
+    ap.add_argument("--compila", action="store_true", help="ricompila frontend/dist ed esci (serve Node.js)")
     args = ap.parse_args()
 
     if sys.version_info < (3, 9):
         die(f"Serve Python 3.9 o superiore (trovato {sys.version.split()[0]}).")
+
+    npm = find_npm()
+    has_dist = (DIST / "index.html").exists()
+    if args.compila:
+        if not npm:
+            die("Per ricompilare l'interfaccia serve Node.js: https://nodejs.org")
+        build_frontend(npm)
+        return
+    if args.pronto or not npm:
+        if not has_dist:
+            die("Node.js non è installato e manca l'interfaccia già compilata (frontend/dist).\n"
+                "         Installa Node.js LTS da https://nodejs.org, riapri il terminale e riprova.")
+        if not npm:
+            say("Node.js non trovato: uso l'interfaccia già compilata (frontend/dist). Va benissimo per usare il simulatore.")
+        run_prebuilt(args)
+        return
 
     backend_proc = frontend_proc = None
     use_backend = not args.mock
@@ -144,7 +209,7 @@ def main() -> None:
     elif use_backend:
         use_backend = setup_backend()
 
-    npm = setup_frontend()
+    setup_frontend(npm)
     if port_in_use(FRONTEND_PORT):
         die(f"La porta {FRONTEND_PORT} è occupata: probabilmente il simulatore è già aperto in un altro terminale.")
 
@@ -168,10 +233,7 @@ def main() -> None:
         if not wait_port(FRONTEND_PORT, 60, frontend_proc):
             die("Il frontend non è partito: controlla i messaggi sopra.")
 
-        url = f"http://127.0.0.1:{FRONTEND_PORT}"
-        say(f"Pronto: {url}   (Ctrl+C per chiudere)")
-        if not args.no_browser:
-            webbrowser.open(url)
+        open_browser(f"http://127.0.0.1:{FRONTEND_PORT}", args)
 
         while True:
             time.sleep(1)

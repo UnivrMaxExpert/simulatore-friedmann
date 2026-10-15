@@ -2,7 +2,7 @@
 .venv/
 venv/
 node_modules/
-frontend/dist/
+# frontend/dist NON è esclusa: è l'interfaccia già compilata, serve a chi non ha Node.js
 
 # Cache Python
 __pycache__/
@@ -26,3 +26,4 @@ Thumbs.db
 desktop.ini
 .vscode/
 .idea/
+_archivio/dist_build.tgz
