@@ -4,7 +4,7 @@ import { LESSON_PRESETS } from '../physics/presets'
 import type { CosmoParams, Preset, SimulateResponse } from '../api/types'
 
 export type Tab = 'simulatore' | 'teoria'
-export type SceneMode = 'space' | 'galaxies' | 'surface'
+export type SceneMode = 'galaxies'
 
 export interface SavedModel {
   id: number
@@ -59,7 +59,7 @@ let savedSeq = 1
 
 export const useStore = create<State>((set, get) => ({
   tab: 'simulatore',
-  scene: 'space',
+  scene: 'galaxies',
   drawerOpen: false,
   cameraReset: 0,
   params: DEFAULT_PARAMS,
@@ -81,7 +81,7 @@ export const useStore = create<State>((set, get) => ({
   tryModel: (presetId, scene) => {
     get().applyPreset(presetId)
     // la superficie non mostra il singolo modello: in quel caso torna allo spazio curvo
-    const next = scene ?? (get().scene === 'surface' ? 'space' : get().scene)
+    const next = scene ?? 'galaxies'
     set({ tab: 'simulatore', scene: next, playing: false })
   },
   setParam: (k, v) => { set(s => ({ params: { ...s.params, [k]: v }, presetId: null })); scheduleSim() },

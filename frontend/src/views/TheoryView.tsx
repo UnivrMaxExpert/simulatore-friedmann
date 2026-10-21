@@ -29,9 +29,9 @@ export default function TheoryView() {
           Le galassie hanno coordinate comoventi r fisse; la loro distanza fisica è <M t="d = a(t)\,r" />.
         </p>
         <div className="try">
-          <Try preset="closed_matter" scene="space">Sfera, k = +1</Try>
-          <Try preset="planck18" scene="space">Piano, k = 0</Try>
-          <Try preset="open_matter" scene="space">Sella, k = −1</Try>
+          <Try preset="closed_matter">Chiuso, k = +1</Try>
+          <Try preset="planck18">Piatto, k = 0</Try>
+          <Try preset="open_matter">Aperto, k = −1</Try>
         </div>
 
         <h3>2. Le equazioni di Friedmann</h3>
@@ -70,9 +70,9 @@ export default function TheoryView() {
           Servono curvatura o altre componenti: l'energia oscura. Confronta i due modelli con il pulsante «Aggiungi il modello al confronto».
         </p>
         <div className="try">
-          <Try preset="einstein_de_sitter">Einstein–de Sitter</Try>
+          <Try preset="einstein_de_sitter">Solo materia, piatto</Try>
           <Try preset="radiation">Solo radiazione</Try>
-          <Try preset="planck18">ΛCDM</Try>
+          <Try preset="planck18">Universo attuale</Try>
         </div>
 
         <h3>5. La costante cosmologica</h3>
@@ -88,8 +88,8 @@ export default function TheoryView() {
           Un universo esattamente statico ha H₀ = 0, quindi non si può impostare con i parametri di oggi del simulatore.
         </p>
         <div className="try">
-          <Try preset="de_sitter">de Sitter</Try>
-          <Try preset="anti_de_sitter">Anti-de Sitter</Try>
+          <Try preset="de_sitter">Solo energia oscura (Λ &gt; 0)</Try>
+          <Try preset="anti_de_sitter">Energia oscura negativa (Λ &lt; 0)</Try>
         </div>
 
         <h3>6. Energia oscura ed espansione accelerata</h3>
@@ -108,7 +108,6 @@ export default function TheoryView() {
           <Try preset="open_matter">Ω &lt; 1</Try>
           <Try preset="einstein_de_sitter">Ω = 1</Try>
           <Try preset="closed_matter">Ω &gt; 1, Big Crunch</Try>
-          <Try preset="closed_matter" scene="surface">Tutti insieme: superficie a(t)</Try>
         </div>
 
         <h3>8. Redshift e tempo</h3>
@@ -124,11 +123,11 @@ export default function TheoryView() {
           Il cono luce è «tagliato» dal Big Bang: possiamo ricevere segnali solo dentro l'orizzonte della particella, che cresce col tempo.
           Oltre il raggio di Hubble la velocità di recessione supera c. Regioni opposte del fondo cosmico hanno la stessa temperatura pur non
           essendo mai state in contatto (problema dell'orizzonte): lo risolve l'inflazione, durante la quale il raggio di Hubble comovente si restringe.
-          Nel simulatore si vedono entrambe le sfere in coordinate comoventi.
+          Nel simulatore si vedono entrambe le sfere attorno a noi.
         </p>
         <div className="try">
-          <Try preset="planck18" scene="galaxies">Orizzonti in ΛCDM</Try>
-          <Try preset="de_sitter" scene="galaxies">de Sitter: il raggio di Hubble si restringe</Try>
+          <Try preset="planck18">Orizzonti nell'universo attuale</Try>
+          <Try preset="de_sitter">Solo energia oscura: crescita esponenziale</Try>
         </div>
 
         <h3>10. Come lo calcola</h3>

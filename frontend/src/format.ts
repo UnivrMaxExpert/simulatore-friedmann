@@ -29,7 +29,7 @@ export const FATE_LABEL: Record<Fate, string> = {
 
 export const FATE_TEXT: Record<Fate, string> = {
   big_crunch: 'La gravità vince: l\'espansione si arresta e l\'universo ricollassa.',
-  big_rip: 'L\'energia fantasma cresce senza limite e strappa lo spazio in un tempo finito.',
+  big_rip: 'L\'energia oscura (w < −1) cresce senza limite e strappa lo spazio in un tempo finito.',
   accelerating_expansion: 'L\'energia oscura domina: l\'espansione accelera per sempre.',
   eternal_expansion: 'L\'espansione rallenta ma non si ferma mai.',
   static: 'Equilibrio instabile tra gravità e costante cosmologica.',
@@ -40,6 +40,10 @@ export const ORIGIN_LABEL: Record<Origin, string> = {
   bounce: 'Rimbalzo',
   eternal_past: 'Passato infinito',
 }
+
+/** il tempo del cursore detto a parole: «oggi», «tra 3,2 miliardi di anni», «5,0 miliardi di anni fa» */
+export const whenLabel = (tRel: number) =>
+  Math.abs(tRel) < 0.05 ? 'oggi' : tRel > 0 ? `tra ${fmt(tRel, 1)} miliardi di anni` : `${fmt(-tRel, 1)} miliardi di anni fa`
 
 export const GEOMETRY_LABEL = { open: 'aperto', flat: 'piatto', closed: 'chiuso' } as const
 

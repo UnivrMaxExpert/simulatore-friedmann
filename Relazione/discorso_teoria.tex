@@ -1,0 +1,115 @@
+\documentclass[12pt,a4paper]{article}
+% Discorso per l'orale: la teoria dietro il simulatore, da raccontare con il simulatore aperto.
+\usepackage[italian]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern,microtype}
+\usepackage[a4paper,margin=2.1cm,top=1.8cm,bottom=2cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{titlesec}
+\titleformat{\section}{\large\bfseries}{\thesection.}{0.5em}{}
+\titlespacing*{\section}{0pt}{12pt}{4pt}
+\usepackage[hidelinks]{hyperref}
+\setlength{\parskip}{5pt}
+\setlength{\parindent}{0pt}
+\linespread{1.06}
+
+\begin{document}
+
+\begin{center}
+{\Large\bfseries La dinamica dell'universo}\\[3pt]
+{\large Discorso per l'orale di Elementi di Cosmologia e Relatività Generale}
+\end{center}
+
+\section{Da dove partiamo}
+Buongiorno. Per il progetto abbiamo costruito un piccolo simulatore che risolve le equazioni di Friedmann e mostra come evolve l'universo al variare dei suoi ingredienti. Più che descrivere il programma, vorremmo usarlo per raccontare la fisica che c'è dietro, perché ogni cosa che si vede sullo schermo viene da una formula precisa.
+
+La domanda di fondo è questa: se sappiamo di cosa è fatto l'universo oggi e quanto velocemente si sta espandendo, possiamo ricostruire il suo passato e prevederne il futuro? La risposta è sì, e il motivo sta nelle equazioni di Friedmann.
+
+\section{L'universo si espande}
+Tutto comincia da un'osservazione di Hubble. Le galassie lontane si allontanano da noi, e lo fanno tanto più velocemente quanto più sono distanti. È la \textbf{legge di Hubble}:
+\[ v = H_0\, d , \]
+dove $d$ è la distanza della galassia e $H_0$ è un numero, la \emph{costante di Hubble}, che oggi vale circa 70 km/s per megaparsec. In pratica vuol dire che una galassia a un megaparsec, circa tre milioni di anni luce, si allontana a 70 km/s, una al doppio della distanza a 140 km/s, e così via.
+
+Questo non significa che noi siamo al centro di qualcosa. Da qualunque galassia si vedrebbe la stessa scena: tutte le altre che si allontanano. Il modo giusto di pensarla è che non sono le galassie a correre via attraverso lo spazio, ma è lo spazio stesso che si dilata, e le porta con sé. Nel simulatore lo si vede bene facendo scorrere il tempo: tutte le galassie si allontanano da tutte.
+
+Per descrivere questa dilatazione basta un solo numero che cambia nel tempo, il \textbf{fattore di scala} $a(t)$. Si può immaginare ogni galassia con un'etichetta fissa, la sua \emph{coordinata comovente} $r$, cioè la sua posizione su una griglia che si allarga insieme all'universo. La distanza vera fra noi e la galassia è allora
+\[ d(t) = a(t)\, r , \]
+e per convenzione si sceglie $a = 1$ oggi. Se nel passato $a$ valeva $0{,}5$, vuol dire che tutte le distanze erano la metà di adesso. Derivando questa relazione rispetto al tempo ritroviamo proprio la legge di Hubble: la velocità è $v = \dot a\, r = (\dot a / a)\, d$. Quindi la quantità
+\[ H(t) = \frac{\dot a}{a} \]
+è il \textbf{parametro di Hubble}: misura quanto velocemente si sta espandendo l'universo in un certo istante, e $H_0$ non è altro che il suo valore oggi.
+
+Una conseguenza importante riguarda la luce. Mentre un fotone viaggia, lo spazio si dilata e la sua lunghezza d'onda si allunga con lui: la luce arriva più rossa di come è partita. È il \textbf{redshift}, indicato con $z$, e vale
+\[ 1 + z = \frac{\lambda_{\text{osservata}}}{\lambda_{\text{emessa}}} = \frac{a(\text{oggi})}{a(\text{emissione})} . \]
+Per questo il redshift di una galassia ci dice quanto era piccolo l'universo quando è partita la sua luce: una galassia a $z = 1$ ci manda luce di quando le distanze erano la metà.
+
+Nel simulatore le galassie si allontanano ma non diventano più grandi. È voluto: una galassia è tenuta insieme dalla propria gravità, e questa vince sull'espansione. Si allontanano le une dalle altre, ma ognuna resta della sua dimensione. E se andiamo abbastanza indietro, prima di circa $z = 10$, le galassie spariscono, semplicemente perché non si erano ancora formate.
+
+\section{Il principio cosmologico e la forma dello spazio}
+Per descrivere la geometria si parte dalla relatività ristretta. Lì lo spaziotempo è piatto e la distanza fra due eventi vicini è data dalla \textbf{metrica di Minkowski},
+\[ ds^2 = c^2 dt^2 - \left(dx^2 + dy^2 + dz^2\right), \]
+un ``intervallo'' che tutti gli osservatori misurano uguale; per la luce vale $ds^2 = 0$. In cosmologia questa metrica va generalizzata, perché lo spazio può dilatarsi e curvarsi.
+
+Per farlo serve un'ipotesi di partenza, il \textbf{principio cosmologico}: su scale molto grandi, oltre un centinaio di megaparsec, l'universo è \emph{omogeneo}, cioè uguale in ogni punto, e \emph{isotropo}, cioè uguale in ogni direzione. In altre parole non esiste un posto o una direzione privilegiata, e nessun osservatore è speciale. Con questa ipotesi la geometria dello spaziotempo può avere una sola forma, la metrica di Robertson--Walker:
+\[ ds^2 = c^2 dt^2 - a^2(t)\left[\frac{dr^2}{1-kr^2} + r^2 d\Omega^2\right]. \]
+Rispetto a Minkowski la parte di spazio è moltiplicata per $a^2(t)$, che la fa dilatare nel tempo, e contiene la curvatura; con $k = 0$ e $a$ costante si torna esattamente a Minkowski. Quello che conta è che tutto dipende da due sole cose: il fattore di scala $a(t)$ e il numero $k$, che indica la \textbf{curvatura} dello spazio. Ci sono tre possibilità. Con $k = 0$ lo spazio è piatto, come quello della geometria che conosciamo, e infinito. Con $k = +1$ è chiuso, come la superficie di una sfera ma in tre dimensioni: finito e senza bordi. Con $k = -1$ è aperto, curvato come una sella, e di nuovo infinito.
+
+\section{Le equazioni di Friedmann}
+Mettendo questa metrica nelle equazioni di Einstein, e trattando tutto il contenuto dell'universo come un fluido con una densità $\rho$ e una pressione $p$, si ottengono le tre equazioni di Friedmann:
+\begin{align*}
+\text{I} \qquad & H^2 = \left(\frac{\dot a}{a}\right)^2 = \frac{8\pi G}{3}\,\rho - \frac{k c^2}{a^2} \\[2pt]
+\text{II} \qquad & \frac{\ddot a}{a} = -\frac{4\pi G}{3}\left(\rho + \frac{3p}{c^2}\right) \\[2pt]
+\text{III} \qquad & \dot\rho = -3\,\frac{\dot a}{a}\left(\rho + \frac{p}{c^2}\right)
+\end{align*}
+Ognuna ha un significato abbastanza intuitivo. La \textbf{prima} lega la velocità di espansione a quello che c'è nell'universo: più materia ed energia contiene, più conta la gravità, e in più c'è il termine della curvatura. La \textbf{seconda} riguarda l'accelerazione, $\ddot a$, e ci dice se l'espansione sta accelerando o rallentando; per la materia normale il secondo membro è negativo, quindi la gravità frena. La \textbf{terza} è la conservazione dell'energia mentre l'universo si espande. Le tre non sono indipendenti: due bastano, la terza si ricava dalle altre.
+
+Per usarle bisogna dire di che tipo è ogni componente, e lo si fa con l'\textbf{equazione di stato} $p = w\,\rho c^2$. Il numero $w$ distingue i vari ingredienti: per la materia, che i cosmologi chiamano ``polvere'' perché ha pressione praticamente nulla, $w = 0$; per la radiazione $w = 1/3$; per la costante cosmologica, di cui parleremo, $w = -1$. Con l'equazione di stato la terza equazione si integra subito e dà
+\[ \rho \propto a^{-3(1+w)} . \]
+Questo risultato spiega molto. La materia si diluisce come $a^{-3}$, semplicemente perché lo stesso numero di particelle occupa un volume più grande. La radiazione va come $a^{-4}$: oltre a diluirsi, ogni fotone perde energia perché la sua lunghezza d'onda si allunga. La costante cosmologica invece non si diluisce affatto. Quindi, guardando la storia dell'universo, all'inizio domina la radiazione, poi la materia, e oggi l'energia oscura. Il grafico della composizione nel simulatore mostra proprio queste tre epoche una dopo l'altra.
+
+Dalla prima equazione nasce anche un concetto fondamentale, la \textbf{densità critica}. È la densità che dovrebbe avere l'universo per essere esattamente piatto:
+\[ \rho_c = \frac{3H^2}{8\pi G} . \]
+Si usa allora il \textbf{parametro di densità} $\Omega = \rho / \rho_c$, cioè la densità misurata in unità di quella critica, e la prima equazione si può riscrivere come
+\[ \Omega - 1 = \frac{k c^2}{a^2 H^2} . \]
+Il secondo membro ha lo stesso segno di $k$, quindi il segno di $\Omega - 1$ è il segno della curvatura. Se c'è più densità di quella critica, $\Omega > 1$ e l'universo è chiuso; se ce n'è meno è aperto; se è esattamente quella critica è piatto. E dato che il segno di $k$ non può cambiare, un universo che oggi ha $\Omega > 1$ lo ha sempre avuto e lo avrà sempre.
+
+Oggi la densità critica è circa $10^{-29}$ grammi per centimetro cubo, l'equivalente di pochi atomi di idrogeno per metro cubo. Quando si va a misurare quanta materia c'è davvero, si trova che quella visibile, cioè stelle, gas e galassie, è appena il 3\% della critica. Studiando come si muovono le galassie negli ammassi, con il teorema del viriale, si scopre che la massa che tiene insieme questi sistemi è circa dieci volte di più: è la \textbf{materia oscura}, e porta il totale della materia intorno al 30\%. Le osservazioni però dicono che l'universo è molto vicino a essere piatto, con $\Omega \approx 1$. Il 70\% che manca è l'\textbf{energia oscura}.
+
+Mettendo insieme tutti gli ingredienti e misurando ognuno come frazione della densità critica di oggi, la prima equazione prende la forma che usa il simulatore:
+\[ H^2 = H_0^2 \left[\,\Omega_r\, a^{-4} + \Omega_m\, a^{-3} + \Omega_k\, a^{-2} + \Omega_\Lambda\, a^{-3(1+w)}\right]. \]
+Qui $\Omega_r$, $\Omega_m$ e $\Omega_\Lambda$ sono radiazione, materia ed energia oscura, e la curvatura $\Omega_k = 1 - \Omega_m - \Omega_r - \Omega_\Lambda$ è semplicemente quello che manca per arrivare a uno. Sono questi i quattro ingredienti da cui dipende tutta la dinamica, e sono proprio i parametri che si possono cambiare nel simulatore. Nel pannello, accanto ai parametri, le tre equazioni sono scritte con i numeri già sostituiti: per il nostro universo oggi la prima dà $H^2 = H_0^2\,(0{,}31 + 0{,}69) = H_0^2$, come deve essere. Se aumentiamo la materia fino a superare la densità critica, si vede la curvatura diventare negativa e lo spazio diventare chiuso.
+
+\section{Che cosa succede cambiando gli ingredienti}
+Il modo migliore per capire le equazioni è provare a togliere o aggiungere qualcosa.
+
+\textbf{Solo materia, spazio piatto.} Senza energia oscura e senza curvatura, la prima equazione si risolve a mano e dà $a(t) \propto t^{2/3}$. Da qui $H = 2/(3t)$, e quindi l'età dell'universo è
+\[ t_0 = \frac{2}{3H_0} \approx 9{,}3 \text{ miliardi di anni}. \]
+Il problema è che conosciamo stelle più vecchie di dieci miliardi di anni, e le misure danno un'età di 13,8 miliardi. È il cosiddetto \textbf{problema dell'età}: un universo fatto solo di materia sarebbe troppo giovane. Nel grafico della dimensione si vede anche il perché. Con la sola materia la curva di $a(t)$ è sempre concava, cioè l'espansione ha sempre rallentato; andando indietro nel tempo la curva scende più in fretta e tocca lo zero prima.
+
+Quel punto in cui $a$ arriva a zero è il \textbf{Big Bang}: la densità e il parametro di Hubble diventano infiniti, è una vera singolarità. Vale la pena sottolineare che non è un'esplosione dovuta alla pressione; anzi, nella seconda equazione la pressione compare con lo stesso segno della densità, quindi frena. Il Big Bang è una conseguenza delle condizioni iniziali: se oggi l'universo si espande e la gravità ha sempre frenato, andando indietro deve esserci stato un istante con $a = 0$.
+
+\textbf{Più materia della densità critica.} Se mettiamo più materia di quella critica, l'universo è chiuso. L'espansione rallenta sempre di più, fino a fermarsi quando il fattore di scala raggiunge il valore massimo $a_{\max} = \Omega_m / (\Omega_m - 1)$; poi l'universo comincia a contrarsi e torna a $a = 0$. È il \textbf{Big Crunch}. Nel grafico di $H$ si vede il parametro di Hubble diventare negativo durante la contrazione. Un universo chiuso è anche più giovane di uno piatto, che a sua volta è più giovane di uno aperto, perché più materia vuol dire più frenata.
+
+\textbf{La costante cosmologica.} Quando Einstein scrisse le sue equazioni pensava che l'universo fosse statico, e per ottenere una soluzione che non si espandesse aggiunse un termine nuovo, la \textbf{costante cosmologica} $\Lambda$. Si comporta come un fluido con $w = -1$, cioè con una pressione negativa, e la sua densità resta costante. Imponendo $\ddot a = 0$ si trova in effetti un universo statico: chiuso, pieno di materia, con $\Lambda c^2 = 4\pi G \rho$. È però un equilibrio instabile, come una matita in piedi sulla punta, e quando Hubble scoprì l'espansione Einstein la definì ``il più grande errore della mia vita''.
+
+Se nell'universo ci fosse soltanto una costante cosmologica positiva, il parametro di Hubble sarebbe costante, $H = c\sqrt{\Lambda/3}$, e il fattore di scala crescerebbe in modo esponenziale, $a(t) \propto e^{Ht}$. Andando indietro $a$ diminuisce ma non arriva mai a zero, quindi non c'è un Big Bang. Questo tipo di crescita descrive l'\textbf{inflazione}, una fase brevissima all'inizio della storia dell'universo, ed è anche il futuro che ci aspetta. Con una costante cosmologica negativa, al contrario, la gravità vince sempre e l'universo finisce per ricollassare.
+
+\textbf{Energia oscura ed espansione accelerata.} Guardando la seconda equazione, l'espansione può accelerare, cioè avere $\ddot a > 0$, solo se $\rho + 3p/c^2$ è negativo. Questo succede quando
+\[ p < -\tfrac{1}{3}\rho c^2 , \qquad \text{cioè} \qquad w < -\tfrac{1}{3} . \]
+Nessuna forma di materia ordinaria ha una pressione così negativa, quindi serve qualcosa di nuovo, che chiamiamo appunto energia oscura. Che l'espansione oggi acceleri lo hanno mostrato alla fine degli anni Novanta le osservazioni delle supernovae, e la radiazione cosmica di fondo e gli ammassi di galassie confermano che l'energia oscura è circa il 70\% del totale. Per misurare se l'espansione accelera si usa il \textbf{parametro di decelerazione} $q = -\ddot a\, a / \dot a^2$: è positivo quando l'espansione rallenta e negativo quando accelera. Nel nostro universo $q$ diventa negativo circa sei miliardi di anni fa: prima dominava la materia e l'espansione rallentava, da quel momento in poi domina l'energia oscura.
+
+\section{Fin dove possiamo vedere}
+Nella scena tridimensionale ci sono due sfere attorno a noi, e ognuna ha un significato preciso.
+
+La sfera rossa è il \textbf{raggio di Hubble}, $d_H = c/H$: è la distanza alla quale la legge di Hubble darebbe una velocità uguale a quella della luce. Oggi è circa 14,5 miliardi di anni luce. Le galassie più lontane si allontanano da noi più velocemente della luce, e infatti nel simulatore il loro colore è rosso. Non c'è contraddizione con la relatività, perché nessuna galassia si muove nello spazio più veloce della luce: è lo spazio in mezzo che si espande.
+
+La sfera arancione è l'\textbf{orizzonte della particella}. Dato che l'universo ha un'età finita, la luce ha avuto a disposizione un tempo finito per viaggiare, e quindi possiamo ricevere segnali solo da una regione limitata. La sua distanza oggi è
+\[ d_p = a(t)\int_0^{t} \frac{c\,dt'}{a(t')} \approx 46 \text{ miliardi di anni luce}. \]
+Può sembrare strano che sia più di 13,8 miliardi di anni luce, ma il motivo è che mentre la luce viaggiava verso di noi lo spazio continuava a dilatarsi, e la sorgente si allontanava. Le galassie grigie nel simulatore sono oltre questo orizzonte: la loro luce non ha ancora fatto in tempo ad arrivarci. Con il passare del tempo l'orizzonte si allarga e vediamo una porzione di universo sempre più grande.
+
+C'è però un effetto opposto. Nel futuro, con l'espansione accelerata, le galassie si allontanano sempre più in fretta mentre il raggio di Hubble resta quasi fermo, così sempre più galassie lo superano e diventano irraggiungibili. Lo stesso meccanismo, all'inizio della storia dell'universo, è quello dell'inflazione, che risolve il \textbf{problema dell'orizzonte}: spiega perché regioni opposte della radiazione cosmica di fondo hanno la stessa temperatura pur non essendo, apparentemente, mai state in contatto.
+
+\section{Per concludere}
+Con le sole equazioni di Friedmann e quattro ingredienti, cioè quanta materia, radiazione ed energia oscura ci sono e quanto è curvo lo spazio, insieme alla velocità di espansione di oggi, si ottengono tutti i possibili destini dell'universo: il Big Bang, un'espansione che rallenta per sempre, il ricollasso nel Big Crunch, oppure un'espansione che accelera senza fine. Il nostro universo, con il 30\% di materia e il 70\% di energia oscura, ha 13,8 miliardi di anni ed è in quest'ultima fase. Il simulatore ci ha permesso di vedere ognuno di questi casi e di collegarlo ogni volta alla formula da cui nasce. Grazie.
+
+\end{document}

@@ -212,3 +212,7 @@ Aggiunti i 3 test a `backend/tests/test_reference.py` (26/26 test passati).
 ### 2026-10-15 23:40 [CLAUDE] Riquadro «Formule ↔ simulatore» + verifica ISSUE-6
 - Nuovo `frontend/src/physics/check.ts` + `components/Checks.tsx` (nel pannello, dopo «Risultati»): per il modello scelto ricalcola in modo indipendente H = H₀E(a) e Ωm(t) al cursore, a(t) esatta (EdS, radiazione, de Sitter, ΛCDM piatto con Ωr = 0, anti-de Sitter), q₀, età (esatta o ∫₀¹ da/(aH₀E)), a_max, t_crunch, z_acc, e li confronta con i valori del backend. Su tutti i preset: differenze < 1e-5 (z_acc ΛCDM 8e-4 per la radiazione trascurata).
 - ISSUE-6 verificata risolta con il backend attuale (Ωm = 1,1 → big_crunch, t_end 1526 Gyr). Nota per Antigravity: vicino al Big Rip (a > 1000, ultimi 2 campioni) H della serie si stacca da H₀E(a) di qualche %: non blocca nulla, il frontend confronta solo fino ad a = 1000.
+
+### 2026-10-21 16:30 [CLAUDE] Interfaccia semplificata
+- Tolte le viste «Spazio curvo» e «Superficie a(t)» (file in `_archivio/viste_tolte/`): resta solo la scena galassie e orizzonti, in distanze fisiche (tolti anche «Comoventi» e le frecce v = H d). `/api/grid` non è più usato dal frontend.
+- Nuovo `components/FriedmannLive.tsx` nel pannello: le tre equazioni con i parametri e a(t) correnti sostituiti, in tempo reale.

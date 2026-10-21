@@ -20,7 +20,7 @@ export default function Timeline() {
   const pct = (t: number) => `${((t - t0) / (t1 - t0)) * 100}%`
 
   const marks: { t: number; label: string; cls?: string }[] = [
-    { t: t0, label: age !== null ? 'Big Bang' : `${fmt(t0, 0)} Gyr` },
+    { t: t0, label: age !== null ? 'Big Bang' : `${fmt(-t0, 0)} miliardi di anni fa` },
     { t: 0, label: 'oggi', cls: 'today' },
   ]
   const d = result.derived
@@ -28,7 +28,7 @@ export default function Timeline() {
   if (d.t_turnaround_gyr !== null && age !== null && d.t_turnaround_gyr - age < t1) marks.push({ t: d.t_turnaround_gyr - age, label: 'inversione' })
   if (d.fate === 'big_crunch' && d.t_end_gyr !== null) marks.push({ t: t1, label: 'Big Crunch' })
   else if (d.fate === 'big_rip' && d.t_end_gyr !== null && age !== null && d.t_end_gyr - age <= t1 + 1) marks.push({ t: t1, label: 'Big Rip' })
-  else marks.push({ t: t1, label: `+${fmt(t1, 0)} Gyr` })
+  else marks.push({ t: t1, label: `tra ${fmt(t1, 0)} miliardi di anni` })
 
   const togglePlay = () => {
     if (!playing && tRel >= t1 - 1e-6) setTRel(t0)
@@ -62,10 +62,10 @@ export default function Timeline() {
         </div>
       </div>
       <div className="readout">
-        <div><b>{age !== null ? fmt(tRel + age, 2) : fmt(tRel, 2)}</b><span>{age !== null ? 't dal Big Bang, Gyr' : 't − t₀, Gyr'}</span></div>
-        <div><b>{fmt(a, 3)}</b><span>a(t)</span></div>
+        <div><b>{age !== null ? fmt(tRel + age, 2) : fmt(tRel, 2)}</b><span>{age !== null ? 'miliardi di anni dal Big Bang' : 'miliardi di anni da oggi'}</span></div>
+        <div><b>{fmt(a, 3)}</b><span>dimensione a (oggi = 1)</span></div>
         <div><b>{fmtSmart(z, 3)}</b><span>redshift z</span></div>
-        <div><b>{fmtSmart(H, 3)}</b><span>H, km/s/Mpc</span></div>
+        <div><b>{fmtSmart(H, 3)}</b><span>espansione H, km/s/Mpc</span></div>
       </div>
     </div>
   )

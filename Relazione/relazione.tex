@@ -52,7 +52,7 @@
 \noindent
 La richiesta del progetto era di \emph{implementare un piccolo simulatore di dinamica dell'universo risolvendo le equazioni di Friedmann, cambiando i parametri di input, e di plottare anche in 3D}.
 Il simulatore realizzato è una webapp che, dati i parametri cosmologici di oggi ($H_0$, $\Om$, $\OL$, $\Or$, $w$), integra numericamente la seconda equazione di Friedmann e mostra l'evoluzione del fattore di scala $a(t)$, del parametro di Hubble, dei parametri di densità e del parametro di decelerazione.
-La visualizzazione 3D rappresenta lo spazio curvo ($k=+1,0,-1$) che si dilata nel tempo, le galassie che si allontanano secondo la legge di Hubble con il raggio di Hubble e l'orizzonte della particella, e la superficie $a(t,\text{parametro})$ che riassume intere famiglie di soluzioni.
+La visualizzazione 3D mostra le galassie che si allontanano secondo la legge di Hubble, con il raggio di Hubble e l'orizzonte della particella; un riquadro mostra le tre equazioni di Friedmann con i parametri scelti sostituiti, aggiornate in tempo reale.
 I risultati sono stati confrontati con soluzioni analitiche e con la libreria \texttt{astropy}: l'età dell'universo nel modello $\Lambda$CDM risulta \SI{13.79}{Gyr} e le altre grandezze coincidono alla terza cifra decimale.
 \end{abstract}
 
@@ -93,7 +93,7 @@ dove $r$ è la coordinata \emph{comovente} (fissa per ogni galassia), $a(t)$ è 
   \item $k=-1$: spazio aperto, a curvatura negativa (iperboloide, ``sella''), infinito.
 \end{itemize}
 La distanza fisica tra due galassie è $d(t)=a(t)\,r$: le galassie non si muovono nello spazio, è lo spazio che si dilata.
-\emph{Nel simulatore:} vista ``Spazio curvo'' (sezione~\ref{sec:spazio}).
+\emph{Nel simulatore:} $\Ok$ e il segno di $k$ sotto i parametri, e il termine $\Ok a^{-2}$ nella prima equazione (sezione~\ref{sec:equazioni}).
 
 \subsection{Le equazioni di Friedmann}
 Inserendo la metrica~\eqref{eq:rw} nelle equazioni di Einstein, con un fluido perfetto di densità $\rho$ e pressione $p$, si ottengono
@@ -141,7 +141,7 @@ Introducendo i parametri di densità di oggi $\Omega_{i}=\rho_{i,0}/\rho_{c,0}$ 
   E^2(a) = \Or a^{-4} + \Om a^{-3} + \Ok a^{-2} + \OL a^{-3(1+w)} .
   \label{eq:E2}
 \end{equation}
-\emph{Nel simulatore:} la barra ``Densità'' mostra $\Omega_i(t)=\Omega_i\,a^{-3(1+w_i)}/E^2(a)$ al tempo del cursore, con una tacca a $\Omega=1$.
+\emph{Nel simulatore:} la barra ``Di cosa è fatto'' mostra $\Omega_i(t)=\Omega_i\,a^{-3(1+w_i)}/E^2(a)$ al tempo del cursore, con una tacca a $\Omega=1$.
 
 \subsection{Modelli piatti senza costante cosmologica e Big Bang}
 Per $k=0$, $\Lambda=0$ e un solo fluido con $w$ costante la I si risolve per separazione di variabili:
@@ -212,7 +212,7 @@ Il cono luce passato dell'osservatore è ``tagliato'' dal Big Bang: possiamo ric
 \end{equation}
 che cresce con il tempo. Il \emph{raggio di Hubble} $d_H=c/H$ è invece la distanza oltre la quale la velocità di recessione supera $c$; in coordinate comoventi $r_H=c/(aH)=c/\dot a$.
 Regioni opposte della radiazione di fondo hanno la stessa temperatura pur non essendo mai state in contatto causale (problema dell'orizzonte): lo risolve l'inflazione, durante la quale $\dot a$ cresce e quindi il raggio di Hubble comovente si restringe.
-\emph{Nel simulatore:} vista ``Galassie e orizzonti'' (sezione~\ref{sec:galassie}).
+\emph{Nel simulatore:} scena 3D (sezione~\ref{sec:galassie}).
 
 % ===========================================================================
 \section{Metodo numerico}
@@ -285,8 +285,8 @@ Se il server di calcolo non è attivo, l'interfaccia usa un integratore Runge--K
 \end{figure}
 
 \begin{itemize}
-  \item \textbf{Server di calcolo} (\texttt{backend/}): espone \texttt{GET /api/health}, \texttt{POST /api/simulate} (integra un modello e restituisce le serie temporali e le grandezze derivate) e \texttt{POST /api/grid} (integra una famiglia di modelli al variare di un parametro, per la superficie 3D). Gli input sono validati (per esempio $H_0\in[20,150]$, $\OL\in[-2,5]$, $w\in[-2{,}5;0]$) e gli errori sono restituiti in italiano.
-  \item \textbf{Interfaccia} (\texttt{frontend/}): riceve i dati, gestisce lo stato (parametri, tempo corrente, modelli in confronto) e disegna scene 3D e grafici.
+  \item \textbf{Server di calcolo} (\texttt{backend/}): espone \texttt{GET /api/health}, \texttt{POST /api/simulate} (integra un modello e restituisce le serie temporali e le grandezze derivate) e \texttt{POST /api/grid} (integra una famiglia di modelli al variare di un parametro; disponibile ma non usato dall'interfaccia attuale). Gli input sono validati (per esempio $H_0\in[20,150]$, $\OL\in[-2,5]$, $w\in[-2{,}5;0]$) e gli errori sono restituiti in italiano.
+  \item \textbf{Interfaccia} (\texttt{frontend/}): riceve i dati, gestisce lo stato (parametri, tempo corrente) e disegna scene 3D e grafici.
   \item \textbf{Contratto} (\texttt{docs/API\_CONTRACT.md}): nomi, unità e significato di ogni campo; \textbf{verifica} (\texttt{docs/VERIFICA.md}): valori di riferimento.
   \item \textbf{Avvio} (\texttt{avvia.py}): crea l'ambiente virtuale Python, installa le dipendenze, avvia server e interfaccia e apre il browser.
 \end{itemize}
@@ -298,13 +298,12 @@ Se il server di calcolo non è attivo, l'interfaccia usa un integratore Runge--K
 % ===========================================================================
 
 \subsection{Comandi e parametri}
-La scena 3D occupa tutto lo schermo. In alto si sceglie la pagina (Simulatore o Teoria) e la vista 3D; in basso c'è la linea del tempo e il pulsante ``Parametri e grafici'', che apre un pannello con:
+La scena 3D occupa tutto lo schermo. In alto si sceglie la pagina (Simulatore o Teoria); in basso c'è la linea del tempo e il pulsante ``Parametri e grafici'', che apre un pannello con:
 \begin{itemize}
   \item \textbf{modelli predefiniti}, presi dalle lezioni (tabella~\ref{tab:preset});
   \item i \textbf{parametri di oggi} $H_0$, $\Om$, $\OL$, $\Or$, $w$ (cursori e campi numerici); $\Ok=1-\Om-\Or-\OL$ e il segno di $k$ sono calcolati e mostrati subito;
   \item la \textbf{composizione} $\Omega_i(t)$ al tempo del cursore, rispetto alla densità critica;
   \item i \textbf{risultati}: destino, età (accanto al valore misurato di \SI{13.8}{Gyr}), $q_0$, geometria, tempo di Hubble $1/H_0$, redshift di inizio dell'accelerazione, $\rho_{c,0}$, $a_{\max}$ o $a_{\min}$ quando esistono;
-  \item il \textbf{confronto}: i modelli aggiunti restano sovrapposti nel grafico di $a(t)$.
 \end{itemize}
 
 \begin{table}[H]\centering\small
@@ -312,11 +311,11 @@ La scena 3D occupa tutto lo schermo. In alto si sceglie la pagina (Simulatore o 
 \toprule
 Modello & $H_0$ & $\Om$ & $\OL$ & $\Or$ & Cosa mostra\\
 \midrule
-$\Lambda$CDM (Planck 2018) & 67,66 & 0,3111 & 0,6889 & $9\!\times\!10^{-5}$ & il modello standard\\
-Einstein--de Sitter & 70 & 1 & 0 & 0 & $a\propto t^{2/3}$, problema dell'età\\
+Universo attuale ($\Lambda$CDM) & 67,66 & 0,3111 & 0,6889 & $9\!\times\!10^{-5}$ & il modello standard\\
+Solo materia, piatto & 70 & 1 & 0 & 0 & $a\propto t^{2/3}$, problema dell'età\\
 Solo radiazione & 70 & 0 & 0 & 1 & $a\propto t^{1/2}$, universo primordiale\\
-de Sitter & 70 & 0 & 1 & 0 & $a\propto e^{Ht}$, nessun Big Bang\\
-Anti-de Sitter & 70 & 0 & $-0{,}5$ & 0 & $\Lambda<0$, ricollasso\\
+Solo energia oscura & 70 & 0 & 1 & 0 & $a\propto e^{Ht}$, nessun Big Bang\\
+Energia oscura negativa & 70 & 0 & $-0{,}5$ & 0 & $\Lambda<0$, ricollasso\\
 Aperto, solo materia & 70 & 0,3 & 0 & 0 & $k=-1$, espansione eterna\\
 Chiuso, solo materia & 70 & 3 & 0 & 0 & $k=+1$, Big Crunch\\
 Solo materia visibile & 70 & 0,03 & 0 & 0 & senza materia ed energia oscura\\
@@ -326,13 +325,13 @@ Solo materia visibile & 70 & 0,03 & 0 & 0 & senza materia ed energia oscura\\
 \label{tab:preset}
 \end{table}
 
-\subsection{Vista ``Spazio curvo''}\label{sec:spazio}
+\subsection{La scena 3D: galassie e orizzonti}\label{sec:galassie}
 \begin{figure}[H]\centering
-\includegraphics[width=\linewidth]{fig/tre_geometrie.png}
-\caption{Le tre geometrie di Robertson--Walker allo stesso fattore di scala: sfera ($k=+1$), piano ($k=0$), sella ($k=-1$).}
+\includegraphics[width=\linewidth]{fig/galassie_oggi.png}
+\caption{$\Lambda$CDM oggi. Noi siamo al centro; la sfera rossa è il raggio di Hubble, quella arancione l'orizzonte della particella. Il colore delle galassie è la velocità di allontanamento $v/c$.}
 \end{figure}
-Uno spazio curvo tridimensionale non si può disegnare: la griglia rappresenta lo spazio \emph{con una dimensione in meno} (sfera, piano o sella, secondo il segno di $k$ del modello scelto). Le galassie hanno coordinate comoventi fisse sulla griglia; quando si fa scorrere il tempo la griglia si dilata di un fattore $a(t)$ e le galassie si allontanano tutte da tutte. Un anello tratteggiato indica la dimensione di oggi ($a=1$).
-Per un universo curvo è indicato anche il raggio di curvatura di oggi, $R_0=c/(H_0\sqrt{|\Ok|})$.
+Circa \num{1600} galassie occupano una regione di raggio $3{,}6\,c/H_0$; noi siamo al centro. Le distanze sono fisiche, $d=a(t)\,r$: facendo scorrere il tempo tutte le galassie si allontanano da tutte. Il colore indica la velocità di allontanamento rispetto alla luce, $v/c=H\,d/c$ (blu lento, rosso oltre $c$), e le galassie oltre l'orizzonte della particella sono grigie perché la loro luce non ci ha ancora raggiunto.
+Per $\Lambda$CDM oggi si ottiene un orizzonte di circa 46 miliardi di anni luce e un raggio di Hubble di \num{14.5} miliardi di anni luce. Nell'era accelerata il raggio di Hubble resta quasi costante mentre le distanze crescono, e sempre più galassie si allontanano più velocemente della luce: è lo stesso meccanismo dell'inflazione.
 
 Due scelte rappresentano la fisica:
 \begin{itemize}
@@ -340,37 +339,26 @@ Due scelte rappresentano la fisica:
   \item prima di $a\approx1/11$ ($z\approx10$, qualche centinaio di milioni di anni dopo il Big Bang) le galassie non si sono ancora formate e la scena mostra solo materia diffusa.
 \end{itemize}
 
-\subsection{Vista ``Galassie e orizzonti''}\label{sec:galassie}
+\subsection{Riquadro delle equazioni}\label{sec:equazioni}
 \begin{figure}[H]\centering
-\includegraphics[width=0.49\linewidth]{fig/galassie_fisiche.png}\hfill
-\includegraphics[width=0.49\linewidth]{fig/galassie_comoventi_futuro.png}
-\caption{A sinistra: oggi, in distanze fisiche; la sfera rossa è il raggio di Hubble, quella arancione l'orizzonte della particella. A destra: lo stesso modello $\Lambda$CDM 25 miliardi di anni nel futuro, in coordinate comoventi: il raggio di Hubble comovente si è ristretto.}
+\includegraphics[width=0.62\linewidth]{fig/equazioni_live.png}
+\caption{$\Lambda$CDM oggi: le tre equazioni con i parametri sostituiti. I colori sono quelli dei grafici (radiazione, materia, curvatura, energia oscura).}
 \end{figure}
-Circa \num{1600} galassie occupano una regione di raggio $3{,}6\,c/H_0$; noi siamo al centro. Il colore indica la velocità di recessione $v/c=H\,d/c$ (blu lento, rosso oltre $c$), e le galassie oltre l'orizzonte della particella sono grigie perché la loro luce non ci ha ancora raggiunto. Si può passare da \emph{distanze fisiche} ($d=a\,r$, tutto si espande) a \emph{coordinate comoventi} (le galassie stanno ferme e si vedono variare le due sfere), e mostrare le frecce $v=H\,d$.
-Per $\Lambda$CDM oggi si ottiene un orizzonte di circa 46 miliardi di anni luce e un raggio di Hubble di \num{14.5} miliardi di anni luce. Nell'era accelerata il raggio di Hubble comovente si restringe, e sempre più galassie si allontanano più velocemente della luce: è lo stesso meccanismo dell'inflazione.
-
-\subsection{Vista ``Superficie $a(t,\text{parametro})$''}
-\begin{figure}[H]\centering
-\includegraphics[width=0.8\linewidth]{fig/superficie_crop.png}
-\caption{Famiglia di universi di sola materia con $\Om$ da 0,05 a 3: ogni sezione a $\Om$ fissato è una soluzione $a(t)$. Per $\Om>1$ le curve tornano a zero (Big Crunch); la linea rossa è ``oggi'', $a=1$.}
-\end{figure}
-Ogni sezione della superficie è una soluzione delle equazioni di Friedmann: un parametro varia, gli altri restano fissi. Sono disponibili quattro famiglie (da aperto a chiuso senza $\Lambda$; universi piatti con $\Om+\OL=1$; quantità di energia oscura; equazione di stato $w$) o una famiglia personalizzata a partire dai parametri del pannello.
+Il riquadro scrive le tre equazioni di Friedmann con i parametri del pannello e con il valore di $a$ al tempo del cursore, e si aggiorna in tempo reale:
+\begin{itemize}
+  \item \textbf{I}: ogni termine di $E^2(a)$ con il suo valore numerico, la somma e il valore di $H$;
+  \item \textbf{II}: i contributi a $\ddot a/a$ (radiazione e materia frenano, l'energia oscura con $w<-1/3$ spinge), il segno dell'accelerazione e $q$;
+  \item \textbf{III}: come si è diluita ogni componente, $\rho_i/\rho_{i,0}=a^{-3(1+w_i)}$.
+\end{itemize}
+Spostando un parametro o la linea del tempo si vede subito quale termine cambia e perché cambia il comportamento dell'universo.
 
 \subsection{Grafici e linea del tempo}
 \begin{figure}[H]\centering
 \includegraphics[width=\linewidth]{fig/pannello_chiuso.png}
 \caption{Pannello aperto con il modello chiuso ($\Om=3$): parametri, $a(t)$ fino al Big Crunch e $\Omega_i(t)$.}
 \end{figure}
-Il grafico principale mostra $a(t)$ (in funzione di $t-t_0$ oppure del tempo dal Big Bang, anche in scala logaritmica), con i modelli in confronto; il secondo grafico mostra a scelta $\Omega_i(t)$, $H(t)$ (con $|H|$ tratteggiato durante la contrazione) o $q(t)$ (con l'area di accelerazione evidenziata).
+Il grafico principale, ``Dimensione dell'universo'', mostra $a(t)$ (in funzione del tempo da oggi oppure dal Big Bang, anche in scala logaritmica), il secondo grafico mostra a scelta la composizione $\Omega_i(t)$, l'espansione $H(t)$ (con $|H|$ tratteggiato durante la contrazione) o l'accelerazione $q(t)$ (con l'area di accelerazione evidenziata). Nell'interfaccia i simboli sono sempre accompagnati da una parola che ne dice il significato, e i tempi sono scritti in miliardi di anni.
 La linea del tempo, sempre visibile, ha un pulsante di riproduzione con velocità regolabile e segna gli eventi notevoli (Big Bang, inizio dell'accelerazione, oggi, inversione, Big Crunch); accanto mostra $t$, $a$, $z$ e $H$ al tempo corrente. Scena 3D, grafici e composizione seguono tutti lo stesso cursore.
-
-\subsection{Riquadro ``Formule $\leftrightarrow$ simulatore''}
-Nel pannello, per il modello scelto, le grandezze calcolate dal simulatore (che integra la II equazione) sono messe accanto agli stessi valori ricavati in modo indipendente dalle formule delle lezioni, con la differenza relativa:
-\begin{itemize}
-  \item al tempo del cursore: $H=H_0E(a)$ dalla I equazione, $\Omega_m(t)=\Om a^{-3}/E^2(a)$ dalla III, e $a(t)$ dalla soluzione esatta quando esiste (Einstein--de Sitter, radiazione, de Sitter, $\Lambda$CDM piatto senza radiazione, anti-de Sitter);
-  \item oggi: $q_0=\Or+\Om/2+\tfrac{1+3w}{2}\OL$; l'età dalla soluzione esatta o, negli altri casi, dall'integrale $t_0=\int_0^1 da/(aH_0E)$; $a_{\max}$ e $t_{\text{crunch}}$ per i modelli che ricollassano; $z_{\text{acc}}$ dalla condizione $\ddot a=0$.
-\end{itemize}
-Per tutti i modelli predefiniti le differenze relative sono inferiori a $10^{-5}$; l'unica eccezione è $z_{\text{acc}}$ in $\Lambda$CDM ($8\times10^{-4}$), perché la formula trascura la piccola componente di radiazione.
 
 \subsection{Pagina ``Teoria''}
 Riassume le equazioni delle lezioni (sezione~2 di questa relazione) con pulsanti che caricano il modello corrispondente nel simulatore: per esempio ``Einstein--de Sitter'' accanto al problema dell'età, ``de Sitter: il raggio di Hubble si restringe'' accanto all'orizzonte.
@@ -418,7 +406,7 @@ Rimbalzo, $\OL=1{,}9$ & --- & --- & $-1{,}750$ & accelerata & $a_{\min}=0{,}611$
 % ===========================================================================
 \begin{itemize}
   \item Il modello è omogeneo e isotropo: descrive l'espansione media, non la formazione delle strutture. Le posizioni delle galassie nelle scene sono casuali e le loro dimensioni non sono in scala.
-  \item La curvatura è rappresentata con una superficie bidimensionale immersa nello spazio tridimensionale: è un'analogia didattica, non uno spazio 3D curvo.
+  \item La curvatura non è disegnata nella scena: si legge da $\Ok$, dal segno di $k$ e dal termine $\Ok a^{-2}$ della prima equazione.
   \item L'equazione di stato dell'energia oscura è costante; un'estensione naturale è $w(a)=w_0+w_a(1-a)$.
   \item Non sono calcolate le distanze osservative (di luminosità, di diametro angolare), che non sono state trattate nel corso; la struttura del codice permette di aggiungerle.
 \end{itemize}
@@ -426,7 +414,7 @@ Rimbalzo, $\OL=1{,}9$ & --- & --- & $-1{,}750$ & accelerata & $a_{\min}=0{,}611$
 % ===========================================================================
 \section{Conclusioni}
 % ===========================================================================
-Il simulatore risolve le equazioni di Friedmann per qualunque combinazione di materia, radiazione, energia oscura e curvatura, integrando la seconda equazione per seguire correttamente l'inversione dell'espansione e i casi senza Big Bang. Le visualizzazioni 3D mostrano i concetti delle lezioni --- la geometria dello spazio, l'espansione, la legge di Hubble, gli orizzonti --- legati in tempo reale alla soluzione numerica, e i risultati sono verificati con soluzioni analitiche e con strumenti di riferimento.
+Il simulatore risolve le equazioni di Friedmann per qualunque combinazione di materia, radiazione, energia oscura e curvatura, integrando la seconda equazione per seguire correttamente l'inversione dell'espansione e i casi senza Big Bang. Le visualizzazioni 3D mostrano i concetti delle lezioni --- l'espansione, la legge di Hubble, gli orizzonti, il ruolo di ogni termine delle equazioni --- legati in tempo reale alla soluzione numerica, e i risultati sono verificati con soluzioni analitiche e con strumenti di riferimento.
 
 \appendix
 
@@ -460,10 +448,10 @@ solo $\OL$ & espansione esponenziale, nessun inizio & $a\propto e^{Ht}$\\
 & Parte & Durata & Nel simulatore\\
 \midrule
 0--2 & Il fenomeno e le equazioni & 3 min & ---\\
-3--4 & $\Lambda$CDM e le tre geometrie & 1,5 min & Spazio curvo\\
+3--4 & $\Lambda$CDM e la curvatura & 1,5 min & galassie, riquadro equazioni\\
 5--7 & Età, Big Crunch, accelerazione & 3 min & pannello, grafici $a(t)$, $H$, $q$\\
 8 & Galassie e orizzonti & 1,5 min & Galassie e orizzonti\\
-9--10 & Funzionamento, verifica, chiusura & 1,5 min & Superficie $a(t)$\\
+9--10 & Funzionamento, verifica, chiusura & 1,5 min & riquadro delle equazioni\\
 \bottomrule
 \end{tabular}
 \caption{Tempi indicativi (circa 10 minuti). In due si può alternare: uno spiega la formula, l'altro la mostra nel simulatore.}
@@ -490,8 +478,8 @@ No: sono sistemi legati dalla gravità e la loro dinamica interna domina sull'es
 \end{orale}
 
 \begin{orale}
-\textbf{Cos'è la griglia nella vista 3D?}\\
-È lo spazio, disegnato con una dimensione in meno: piano per $k=0$, sfera per $k=+1$, sella per $k=-1$. Le galassie sono ferme nelle coordinate comoventi; è la griglia che si dilata con $a(t)$.
+\textbf{Cosa indica il colore delle galassie?}\\
+La velocità con cui si allontanano, divisa per quella della luce: $v/c=H\,d/c$. Le galassie rosse sono oltre il raggio di Hubble e si allontanano più veloci della luce, cosa permessa perché è lo spazio che si espande; quelle grigie sono oltre l'orizzonte e la loro luce non ci ha ancora raggiunto.
 \end{orale}
 
 \begin{orale}

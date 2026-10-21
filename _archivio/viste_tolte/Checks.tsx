@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useStore } from '../store/useStore'
 import { computeChecks, relDiff } from '../physics/check'
-import { fmt } from '../format'
+import { fmt, whenLabel } from '../format'
 
 const TOL = 5e-3 // 0,5 %: entro questa soglia formula e simulazione coincidono
 
@@ -21,16 +21,10 @@ export default function Checks() {
   const tRel = useStore(s => s.tRel)
   const checks = useMemo(() => (result ? computeChecks(result, tRel) : []), [result, tRel])
   if (!result || checks.length === 0) return null
-  const allOk = checks.every(c => relDiff(c) < TOL)
-  const cursorLabel = Math.abs(tRel) < 0.05 ? 'oggi' : `t₀ ${tRel >= 0 ? '+' : '−'} ${fmt(Math.abs(tRel), 1)} Gyr`
+  const cursorLabel = whenLabel(tRel)
 
   return (
     <div className="section">
-      <h2>Formule ↔ simulatore <small>{allOk ? 'tutto coincide' : 'controlla le righe in giallo'}</small></h2>
-      <p className="preset-desc">
-        Il simulatore integra numericamente la II equazione di Friedmann. Qui le stesse grandezze sono ricalcolate con le formule delle lezioni.
-        Le righe segnate «{cursorLabel}» seguono la linea del tempo e usano il punto della soluzione più vicino, senza interpolare.
-      </p>
       <ul className="checks">
         {checks.map(c => {
           const r = relDiff(c)

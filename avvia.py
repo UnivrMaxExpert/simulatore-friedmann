@@ -8,7 +8,7 @@ Avvio con un solo comando del Simulatore di Friedmann.
     python avvia.py --reload     backend con auto-reload (utile mentre si sviluppa)
 
 Al primo avvio crea .venv, installa backend/requirements.txt e fa npm install in frontend/.
-Prerequisiti: Python >= 3.9 e Node.js >= 18. Su Windows, se Node.js manca, lo installa da solo con winget.
+Prerequisiti: Python >= 3.9 e Node.js >= 18 (non vengono installati in automatico).
 """
 from __future__ import annotations
 
@@ -101,7 +101,7 @@ def find_npm() -> str | None:
     npm = shutil.which("npm.cmd" if IS_WIN else "npm") or shutil.which("npm")
     if npm or not IS_WIN:
         return npm
-    # appena installato con winget: il PATH di questa finestra non è ancora aggiornato, lo cerco nelle cartelle standard
+    # Node.js installato ma non nel PATH di questa finestra: lo cerco nelle cartelle standard
     for base in (os.environ.get("ProgramFiles", r"C:\Program Files"), os.environ.get("LOCALAPPDATA", "")):
         cand = Path(base) / ("nodejs" if "Program" in base else "Programs/nodejs") / "npm.cmd"
         if base and cand.exists():
@@ -110,27 +110,11 @@ def find_npm() -> str | None:
     return None
 
 
-def install_node() -> None:
-    """Installa Node.js LTS con winget (Windows 10/11). Su altri sistemi spiega come fare."""
-    if not IS_WIN:
-        die("Node.js/npm non trovato. Installalo (macOS: brew install node · Linux: sudo apt install nodejs npm) "
-            "oppure da https://nodejs.org, poi riprova.")
-    if not shutil.which("winget"):
-        die("Node.js non trovato e winget non è disponibile. Installa Node.js LTS da https://nodejs.org e riprova.")
-    say("Node.js non trovato: lo installo con winget (una volta sola, può chiedere il permesso di amministratore)…")
-    r = subprocess.run(["winget", "install", "-e", "--id", "OpenJS.NodeJS.LTS",
-                        "--accept-package-agreements", "--accept-source-agreements"])
-    if r.returncode != 0 and not find_npm():
-        die("Installazione di Node.js non riuscita. Installalo a mano da https://nodejs.org e riprova.")
-
-
 def setup_frontend() -> str:
     npm = find_npm()
     if not npm:
-        install_node()
-        npm = find_npm()
-        if not npm:
-            die("Node.js è stato installato: chiudi questa finestra e riavvia avvia.bat.")
+        die("Node.js non trovato. Installa la versione LTS da https://nodejs.org, "
+            "chiudi questa finestra e rilancia avvia.bat.")
     marker = FRONTEND / "node_modules" / ".package-lock.json"
     pkg = FRONTEND / "package.json"
     if not marker.exists() or marker.stat().st_mtime < pkg.stat().st_mtime:

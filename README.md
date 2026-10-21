@@ -4,7 +4,7 @@ Simulatore della dinamica dell'universo basato sulle equazioni di Friedmann, con
 Progetto per il corso *Elementi di Cosmologia e Relatività Generale* — Università di Verona.
 
 ## Avvio (un solo comando)
-Prerequisiti: **Python ≥ 3.9** e **Node.js ≥ 18**. Su Windows non serve installarli a mano: se mancano, `avvia.bat` li installa con winget (Python prima, poi Node.js LTS).
+Prerequisiti: **Python ≥ 3.9** e **Node.js ≥ 18** (versione LTS da nodejs.org) installati; lo script non li scarica da solo.
 
 ```bash
 python avvia.py

@@ -1,17 +1,24 @@
 @echo off
+setlocal
 cd /d "%~dp0"
-where py >/dev/null 2>/dev/null && (py -3 avvia.py %* & goto fine)
-python --version >/dev/null 2>/dev/null && (python avvia.py %* & goto fine)
-echo.
-echo Python non risulta installato: provo a installarlo con winget...
-winget install -e --id Python.Python.3.12 --accept-package-agreements --accept-source-agreements
-if errorlevel 1 (
+
+rem Cerca Python 3 gia installato (non scarica niente)
+set "PY="
+py -3 --version >NUL 2>&1 && set "PY=py -3"
+if not defined PY python --version >NUL 2>&1 && set "PY=python"
+if not defined PY python3 --version >NUL 2>&1 && set "PY=python3"
+if not defined PY for /d %%D in ("%LOCALAPPDATA%\Programs\Python\Python3*" "%ProgramFiles%\Python3*") do if exist "%%D\python.exe" set "PY="%%D\python.exe""
+
+if not defined PY (
   echo.
-  echo Installazione automatica non riuscita. Scarica Python da https://www.python.org/downloads/
+  echo Python 3 non trovato.
+  echo Installalo da https://www.python.org/downloads/
   echo spuntando "Add python.exe to PATH", poi rilancia avvia.bat.
   goto fine
 )
-echo.
-echo Python installato. Chiudi questa finestra e fai di nuovo doppio clic su avvia.bat.
+
+%PY% avvia.py %*
+
 :fine
+echo.
 pause

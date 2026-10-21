@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { createPortal } from 'react-dom'
 import Plot, { AXIS } from '../components/Plot'
 import { useStore, sampleAt } from '../store/useStore'
 import type { SimulateResponse } from '../api/types'
@@ -17,6 +18,13 @@ export default function PlotsPanel() {
   const [xmode, setXmode] = useState<XMode>('rel')
   const [logA, setLogA] = useState(false)
   const [side, setSide] = useState<Side>('omega')
+  const [big, setBig] = useState<'a' | 'side' | null>(null)
+  useEffect(() => {
+    if (!big) return
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setBig(null) }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [big])
 
   const xOf = (r: SimulateResponse) => (xmode === 'bb' && r.derived.age_gyr !== null ? r.series.t_gyr : r.series.t_rel_gyr)
 
@@ -38,7 +46,7 @@ export default function PlotsPanel() {
   const cursorX = useBB ? tRel + age! : tRel
   const todayX = useBB ? age! : 0
   const aNow = sampleAt(result, 'a', tRel)
-  const xaxis = { ...AXIS, title: { ...AXIS.title, text: useBB ? 't dal Big Bang (Gyr)' : 't − t₀ (Gyr)' } }
+  const xaxis = { ...AXIS, title: { ...AXIS.title, text: useBB ? 'miliardi di anni dal Big Bang' : 'miliardi di anni da oggi (negativo = passato)' } }
   const shapes = [
     { type: 'line', x0: todayX, x1: todayX, yref: 'paper', y0: 0, y1: 1, line: { color: COLORS.rail, width: 1 } },
     { type: 'line', x0: cursorX, x1: cursorX, yref: 'paper', y0: 0, y1: 1, line: { color: COLORS.red, width: 1.5, dash: 'dot' } },
@@ -49,23 +57,23 @@ export default function PlotsPanel() {
   let sideExtra: object = {}
   if (side === 'H') {
     sideData = [
-      { x, y: s.H.map(h => (h > 0 ? h : null)), name: 'H > 0', line: { color: COLORS.blue, width: 2 } },
-      { x, y: s.H.map(h => (h < 0 ? -h : null)), name: '|H| in contrazione', line: { color: COLORS.red, width: 2, dash: 'dash' } },
+      { x, y: s.H.map(h => (h > 0 ? h : null)), name: 'in espansione', line: { color: COLORS.blue, width: 2 } },
+      { x, y: s.H.map(h => (h < 0 ? -h : null)), name: 'in contrazione (|H|)', line: { color: COLORS.red, width: 2, dash: 'dash' } },
     ]
-    sideY = { type: 'log', title: { ...AXIS.title, text: 'H (km/s/Mpc)' }, range: hRange(s.H, result.params.H0) }
+    sideY = { type: 'log', title: { ...AXIS.title, text: 'H, velocità di espansione (km/s/Mpc)' }, range: hRange(s.H, result.params.H0) }
     sideExtra = { showlegend: s.H.some(h => h < 0) }
   } else if (side === 'omega') {
     sideData = [
-      { x, y: s.omega_m, name: 'Ωm', line: { color: COLORS.matter, width: 2 } },
-      { x, y: s.omega_r, name: 'Ωr', line: { color: COLORS.radiation, width: 2 } },
-      { x, y: s.omega_lambda, name: 'ΩΛ', line: { color: COLORS.lambda, width: 2 } },
-      { x, y: s.omega_k, name: 'Ωk', line: { color: COLORS.curvature, width: 2, dash: 'dot' } },
+      { x, y: s.omega_m, name: 'materia Ωm', line: { color: COLORS.matter, width: 2 } },
+      { x, y: s.omega_r, name: 'radiazione Ωr', line: { color: COLORS.radiation, width: 2 } },
+      { x, y: s.omega_lambda, name: 'energia oscura ΩΛ', line: { color: COLORS.lambda, width: 2 } },
+      { x, y: s.omega_k, name: 'curvatura Ωk', line: { color: COLORS.curvature, width: 2, dash: 'dot' } },
     ]
-    sideY = { title: { ...AXIS.title, text: 'Ωi(t)' }, range: clampRange([s.omega_m, s.omega_r, s.omega_lambda, s.omega_k]) }
+    sideY = { title: { ...AXIS.title, text: 'quota della densità Ωi' }, range: clampRange([s.omega_m, s.omega_r, s.omega_lambda, s.omega_k]) }
     sideExtra = { legend: { orientation: 'h', x: 0, y: 1.02, yanchor: 'bottom', font: { size: 11.5 } } }
   } else {
     sideData = [{ x, y: s.q, name: 'q', line: { color: COLORS.ink, width: 2 } }]
-    sideY = { title: { ...AXIS.title, text: 'q = −ä a / ȧ²' }, range: clampRange([s.q], -1.6, 1.6) }
+    sideY = { title: { ...AXIS.title, text: 'q (sotto lo zero: accelera)' }, range: clampRange([s.q], -1.6, 1.6) }
     sideExtra = {
       showlegend: false,
       annotations: [{ xref: 'paper', x: 0.02, y: -0.1, yanchor: 'top', xanchor: 'left', text: 'accelera', showarrow: false, font: { color: COLORS.lambda, size: 11.5 } }],
@@ -73,17 +81,17 @@ export default function PlotsPanel() {
     shapes.push({ type: 'rect', x0: 0, x1: 1, y0: -10, y1: 0, line: { width: 0, color: '' }, xref: 'paper', fillcolor: COLORS.lambda, opacity: 0.07 } as never)
   }
 
-  return (
-    <div className="plots">
-      <div className="plot-card">
+  const cardA = (inModal: boolean) => (
+      <div className={inModal ? 'plot-card big' : 'plot-card'}>
         <div className="card-head">
-          <h3>Fattore di scala a(t) <small className="num">al cursore a = {fmt(aNow, 3)}</small></h3>
+          <h3>Dimensione dell'universo a(t) <small className="num">oggi a = 1 · ora a = {fmt(aNow, 3)}</small></h3>
           <div className="card-tools">
             <div className="seg small" role="group" aria-label="Asse dei tempi">
               <button aria-pressed={xmode === 'rel'} onClick={() => setXmode('rel')}>da oggi</button>
               <button aria-pressed={xmode === 'bb'} onClick={() => setXmode('bb')}>dal Big Bang</button>
             </div>
-            <label className="check small"><input type="checkbox" checked={logA} onChange={e => setLogA(e.target.checked)} />log</label>
+            <label className="check small"><input type="checkbox" checked={logA} onChange={e => setLogA(e.target.checked)} />scala log</label>
+            <button className="btn ghost small expand" onClick={() => setBig(inModal ? null : 'a')} aria-label={inModal ? 'Chiudi' : 'Ingrandisci il grafico'} title={inModal ? 'Chiudi (Esc)' : 'Ingrandisci'}>{inModal ? '✕ Chiudi' : '⤢'}</button>
           </div>
         </div>
         <div className="plot-body">
@@ -92,19 +100,22 @@ export default function PlotsPanel() {
             data={[...aData, { x: [cursorX], y: [aNow], type: 'scatter', mode: 'markers', marker: { color: COLORS.red, size: 8 }, showlegend: false, hoverinfo: 'skip' }]}
             layout={{
               ...COMPACT, xaxis,
-              yaxis: { ...AXIS, title: { ...AXIS.title, text: 'a(t)' }, type: logA ? 'log' : 'linear', ...(logA ? {} : { range: [0, aMax(result, saved.map(m => m.result))] }) },
+              yaxis: { ...AXIS, title: { ...AXIS.title, text: 'dimensione a(t)' }, type: logA ? 'log' : 'linear', ...(logA ? {} : { range: [0, aMax(result, saved.map(m => m.result))] }) },
               shapes, showlegend: saved.length > 0, legend: { orientation: 'h', x: 0, y: 1.02, yanchor: 'bottom', font: { size: 11.5 } },
             }}
           />
         </div>
       </div>
-      <div className="plot-card">
+  )
+  const cardSide = (inModal: boolean) => (
+      <div className={inModal ? 'plot-card big' : 'plot-card'}>
         <div className="card-head">
           <div className="seg small" role="group" aria-label="Grafico">
-            <button aria-pressed={side === 'omega'} onClick={() => setSide('omega')}>Ωi(t)</button>
-            <button aria-pressed={side === 'H'} onClick={() => setSide('H')}>H(t)</button>
-            <button aria-pressed={side === 'q'} onClick={() => setSide('q')}>q(t)</button>
+            <button aria-pressed={side === 'omega'} onClick={() => setSide('omega')}>Composizione Ωi</button>
+            <button aria-pressed={side === 'H'} onClick={() => setSide('H')}>Espansione H</button>
+            <button aria-pressed={side === 'q'} onClick={() => setSide('q')}>Accelerazione q</button>
           </div>
+            <button className="btn ghost small expand" onClick={() => setBig(inModal ? null : 'side')} aria-label={inModal ? 'Chiudi' : 'Ingrandisci il grafico'} title={inModal ? 'Chiudi (Esc)' : 'Ingrandisci'}>{inModal ? '✕ Chiudi' : '⤢'}</button>
         </div>
         <div className="plot-body">
           <Plot
@@ -114,6 +125,18 @@ export default function PlotsPanel() {
           />
         </div>
       </div>
+  )
+
+  return (
+    <div className="plots">
+      {cardA(false)}
+      {cardSide(false)}
+      {big && createPortal(
+        <div className="plot-modal" role="dialog" aria-modal="true" onClick={e => { if (e.target === e.currentTarget) setBig(null) }}>
+          {big === 'a' ? cardA(true) : cardSide(true)}
+        </div>,
+        document.body,
+      )}
     </div>
   )
 }
