@@ -1,0 +1,95 @@
+\documentclass[12pt,a4paper]{article}
+% Parte di Louis, versione intermedia con filo conduttore.
+\usepackage[italian]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern,microtype}
+\usepackage[a4paper,margin=2cm,top=1.7cm,bottom=1.8cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{titlesec}
+\titleformat{\section}{\large\bfseries}{\thesection.}{0.5em}{}
+\titlespacing*{\section}{0pt}{10pt}{3pt}
+\setlength{\parskip}{5pt}
+\setlength{\parindent}{0pt}
+\linespread{1.05}
+
+\begin{document}
+
+\begin{center}
+{\Large\bfseries La dinamica dell'universo}\\[3pt]
+{\large Parte di Louis: dalle equazioni di Friedmann ai casi di universo}
+\end{center}
+
+\section{Dalla metrica alle equazioni di Friedmann}
+Grazie Lorenzo. La metrica di Robertson--Walker ci dice com'è fatto lo spazio, ma non come si muove: il fattore di scala $a(t)$ resta una funzione incognita. Per trovarla bisogna dire cosa c'è dentro l'universo, perché è il contenuto di materia ed energia a decidere la geometria. Mettendo la metrica nelle equazioni di campo di Einstein, e trattando tutto il contenuto come un fluido con densità $\rho$ e pressione $p$, si ottengono le equazioni di Friedmann:
+\begin{align*}
+\text{I} \qquad & \left(\frac{\dot a}{a}\right)^2 = \frac{8\pi G}{3}\,\rho - \frac{k c^2}{a^2} \\[2pt]
+\text{II} \qquad & \frac{\ddot a}{a} = -\frac{4\pi G}{3}\left(\rho + \frac{3p}{c^2}\right) \\[2pt]
+\text{III} \qquad & \dot\rho = -3\,\frac{\dot a}{a}\left(\rho + \frac{p}{c^2}\right)
+\end{align*}
+La \textbf{prima} lega la velocità di espansione, $H = \dot a/a$, al contenuto e alla curvatura. Ha solo la derivata prima, quindi è una legge di conservazione dell'energia. La \textbf{seconda} contiene l'accelerazione ed è la vera equazione dinamica: dice se l'espansione rallenta o accelera. La \textbf{terza} dice come cambia la densità mentre l'universo si espande.
+
+La prima si può capire anche in modo newtoniano. Prendo una sfera di universo e una galassia sul suo bordo: la galassia sente solo l'attrazione della massa dentro la sfera. Scrivendo che la sua energia, cinetica più potenziale, si conserva, e usando $v = \dot a\, r$, si ritrova proprio la prima equazione, con la costante uguale a $-kc^2$. Quindi la curvatura è legata all'energia: con $k = +1$ l'energia è negativa e la galassia prima o poi torna indietro, come un sasso lanciato in aria; con $k = -1$ l'energia è positiva e si allontana per sempre, come un razzo che supera la velocità di fuga.
+
+\section{Perché serve l'equazione di stato}
+Le incognite sono tre, $a$, $\rho$ e $p$, ma delle tre equazioni solo due sono indipendenti. Manca quindi una relazione che leghi la pressione alla densità, e dipende da che tipo di fluido abbiamo: è l'\textbf{equazione di stato}, $p = w\,\rho c^2$, dove $w$ è un numero diverso per ogni ingrediente.
+
+La \textbf{materia} si chiama \textbf{polvere}: sono particelle non relativistiche, cioè molto più lente della luce, e la loro energia è quasi tutta quella della massa a riposo. Le galassie si muovono così poco l'una rispetto all'altra che la loro pressione è trascurabile, quindi $w = 0$. La \textbf{radiazione} è l'estremo opposto, fatta di particelle relativistiche come i fotoni, e ha $w = 1/3$. La \textbf{costante cosmologica} ha $w = -1$, cioè pressione negativa.
+
+Mettendo l'equazione di stato nella terza, che è a variabili separabili, si trova come la densità cambia con le dimensioni dell'universo:
+\[ \rho \propto a^{-3(1+w)} . \]
+Si dice che la densità ``scala come'' una potenza di $a$. Per la materia va come $a^{-3}$: in un cubo di universo la massa resta la stessa, ma il lato cresce con $a$ e il volume con $a^3$. Per la radiazione va come $a^{-4}$: il numero di fotoni per volume cala come $a^{-3}$, e in più ogni fotone perde energia perché la sua lunghezza d'onda si allunga con l'universo. La costante cosmologica invece resta costante.
+
+\section{Densità critica e parametro $\Omega$}
+A questo punto vogliamo sapere che forma ha l'universo, ma la curvatura $k$ non si misura direttamente. Si misurano invece $H$, con il redshift, e la densità, contando la materia. La prima equazione dice che se lo spazio fosse piatto, con $k = 0$, la densità dovrebbe valere esattamente
+\[ \rho_c = \frac{3H^2}{8\pi G} , \]
+la \textbf{densità critica}: è la soglia tra un universo chiuso e uno aperto. Per confrontare la densità vera con questa soglia si fa il loro rapporto, il \textbf{parametro di densità} $\Omega = \rho/\rho_c$, che è un numero puro. Dividendo la prima equazione per $H^2$ si ottiene
+\[ \Omega - 1 = \frac{k c^2}{a^2 H^2} . \]
+A destra il segno è quello di $k$. Quindi con $\Omega > 1$ l'universo è chiuso, con $\Omega < 1$ è aperto, con $\Omega = 1$ è piatto. E siccome $k$ è costante, un universo piatto oggi è sempre stato piatto e lo resterà.
+
+Le misure dicono che l'universo è piatto, quindi $\Omega \approx 1$. Ma la materia, contando anche la materia oscura che si vede solo dai suoi effetti gravitazionali, arriva a circa il 30\%. Il 70\% che manca è l'\textbf{energia oscura}.
+
+Dando a ogni ingrediente il suo $\Omega$ di oggi, la prima equazione diventa quella che risolve il simulatore:
+\[ H^2 = H_0^2 \left[\,\Omega_r\, a^{-4} + \Omega_m\, a^{-3} + \Omega_k\, a^{-2} + \Omega_\Lambda \right], \]
+dove $\Omega_k = 1 - \Omega_m - \Omega_r - \Omega_\Lambda$ è la curvatura, cioè quello che manca per arrivare a uno: positiva se l'universo è aperto, negativa se è chiuso.
+
+\section{Che cos'è l'energia oscura}
+Guardiamo la seconda equazione. La materia ha densità positiva e pressione nulla, quindi dà sempre $\ddot a < 0$: la gravità può solo frenare. Ma dalle supernovae lontane si osserva che oggi l'espansione accelera. L'unico modo è avere $\rho + 3p/c^2 < 0$, cioè una pressione così negativa da avere $w < -1/3$: più una tensione che una pressione. Questo ingrediente è l'energia oscura. Le osservazioni dicono $w \approx -1$ e densità costante, che è esattamente la costante cosmologica. Cosa sia davvero non si sa: un'ipotesi è che sia un'energia del vuoto stesso. La sua quantità, il 70\%, è confermata anche dalla radiazione cosmica di fondo e da come si raggruppano gli ammassi di galassie.
+
+La costante cosmologica l'aveva introdotta Einstein, ma per un motivo opposto. Con $\Lambda$ le prime due equazioni diventano
+\begin{align*}
+\text{I} \qquad & \left(\frac{\dot a}{a}\right)^2 = \frac{8\pi G}{3}\,\rho + \frac{\Lambda c^2}{3} - \frac{k c^2}{a^2} \\[2pt]
+\text{II} \qquad & \frac{\ddot a}{a} = -\frac{4\pi G}{3}\left(\rho + \frac{3p}{c^2}\right) + \frac{\Lambda c^2}{3}
+\end{align*}
+Nella seconda $\Lambda$ ha il segno opposto alla materia: spinge invece di frenare, come una pressione negativa. Einstein credeva che l'universo fosse statico: con sola polvere impose $\dot a = 0$ e $\ddot a = 0$ e trovò il valore che lo tiene fermo, $\Lambda_E = 4\pi G\rho/c^2$, con curvatura positiva e raggio $a_E = 1/\sqrt{\Lambda_E} = c/\sqrt{4\pi G\rho}$. Ma Friedmann dimostrò che questa soluzione non è stabile: basta una piccola perturbazione perché l'universo cominci a espandersi o a contrarsi. Dopo la scoperta dell'espansione Einstein la chiamò il suo più grande errore. Oggi $\Lambda$ è tornata, non per rendere statico l'universo ma per spiegarne l'espansione accelerata.
+
+\section{Come si trova $a(t)$}
+Ora abbiamo tutto per risolvere. Mettendo $\rho \propto a^{-3(1+w)}$ nella prima equazione, per uno spazio piatto e senza costante cosmologica, si ha $\dot a^2 \propto a^{-(1+3w)}$. È un'equazione differenziale a variabili separabili: porto le $a$ da una parte e il tempo dall'altra, integro, e trovo
+\[ a(t) \propto t^{\frac{2}{3(1+w)}} . \]
+Questa formula vale per la materia e per la radiazione, basta cambiare $w$. Con $w = -1$ non vale più, perché l'esponente diventa infinito: quel caso si risolve a parte.
+
+\section{I casi}
+In ogni caso fisso i valori degli ingredienti, che sono quelli che si impostano nel pannello, e guardo cosa succede.
+
+\textbf{Solo materia, piatto} ($\Omega_m = 1$, $\Omega_r = 0$, $\Omega_\Lambda = 0$, $\Omega_k = 0$). Con $w = 0$ la formula dà $a \propto t^{2/3}$. La seconda equazione dà $\ddot a < 0$, quindi l'espansione rallenta sempre. Andando indietro $a$ arriva a zero in un tempo finito, dove densità e $H$ diventano infiniti: è il \textbf{Big Bang}. Il ragionamento usa solo la seconda equazione, quindi vale per qualunque curvatura, e si può evitare solo con una costante cosmologica. Da $a \propto t^{2/3}$ viene anche l'età dell'universo, $t_0 = 2/(3H_0)$, circa 10 miliardi di anni. Ma le osservazioni dicono 13,8. È il \textbf{problema dell'età}: il modello dà l'ordine di grandezza giusto ma il valore sbagliato. Le possibilità sono due: o l'universo non è piatto, o manca un ingrediente. Siccome è piatto, manca qualcosa, ed è di nuovo l'energia oscura.
+
+\textbf{Solo radiazione} ($\Omega_r = 1$, $\Omega_m = 0$, $\Omega_\Lambda = 0$, $\Omega_k = 0$). Con $w = 1/3$ si trova $a \propto t^{1/2}$: rallenta ancora di più, perché qui anche la pressione frena. È il comportamento dei primi istanti, quando $a$ è piccolo e $a^{-4}$ è il termine più grande.
+
+\textbf{Solo energia oscura} ($\Omega_\Lambda = 1$, $\Omega_m = 0$, $\Omega_r = 0$, $\Omega_k = 0$). È l'universo di \textbf{de Sitter}: vuoto ($\rho = 0$, $p = 0$), piatto ($k = 0$) e con $\Lambda > 0$. Nella prima equazione resta solo $(\dot a/a)^2 = \Lambda c^2/3$, quindi
+\[ H = \frac{\dot a}{a} = c\sqrt{\frac{\Lambda}{3}} = \text{costante}, \qquad a(t) = a_0 \exp\!\left[c\sqrt{\frac{\Lambda}{3}}\,(t - t_0)\right] : \]
+il parametro di Hubble è costante e $a$ cresce in modo esponenziale. Andando indietro $a$ diminuisce ma non arriva mai a zero: non c'è Big Bang. Con $\Lambda$ negativa si ha l'universo di \textbf{anti-de Sitter}: nel simulatore ($\Omega_\Lambda = -0{,}5$, $\Omega_k = 1{,}5$) si espande, si ferma e ricollassa.
+
+\textbf{Materia con curvatura} (aperto: $\Omega_m = 0{,}3$, $\Omega_k = 0{,}7$; chiuso: $\Omega_m = 3$, $\Omega_k = -2$; sempre $\Omega_\Lambda = 0$). All'inizio $a^{-3}$ domina su $a^{-2}$ e la curvatura non conta. Poi si torna all'immagine della galassia: se l'universo è \textbf{chiuso} l'espansione si ferma e tutto ricollassa nel \textbf{Big Crunch}; se è \textbf{aperto} si espande per sempre e alla fine $a \propto t$. Un universo chiuso è più giovane di uno piatto, che è più giovane di uno aperto.
+
+\textbf{Il nostro universo} ($\Omega_m \approx 0{,}31$, $\Omega_\Lambda \approx 0{,}69$, $\Omega_r \approx 0{,}0001$, $\Omega_k = 0$). All'inizio domina la materia e l'espansione rallenta. Ma la materia cala come $a^{-3}$, l'energia oscura resta costante, e qualche miliardo di anni fa l'espansione ha cominciato ad accelerare: nel grafico la curva da concava diventa convessa. L'età torna 13,8 miliardi di anni e il problema dell'età è risolto.
+
+\section{La regola generale}
+Tutti i casi si leggono dalla formula di $H^2$: quando $a$ è piccolo vince il termine con la potenza più negativa, quando è grande quello che cala meno. Per questo all'inizio domina la radiazione, poi la materia, e alla fine l'energia oscura, l'unica che non cala. Nel grafico della composizione si vedono queste epoche una dopo l'altra.
+
+\section{Fin dove possiamo vedere}
+La sfera rossa è il \textbf{raggio di Hubble}: oltre, le galassie si allontanano più veloci della luce. Non contraddice la relatività, perché non si muovono nello spazio: è lo spazio in mezzo che si espande. La sfera arancione è l'\textbf{orizzonte della particella}: l'universo ha un'età finita, quindi vediamo solo la regione da cui la luce ha fatto in tempo ad arrivarci. È più grande di 13,8 miliardi di anni luce, perché mentre la luce viaggiava lo spazio continuava a dilatarsi.
+
+\section{Conclusione}
+Partendo dalla metrica, le equazioni di Friedmann con l'equazione di stato permettono di trovare $a(t)$ per qualunque contenuto. Cambiando gli ingredienti si ottengono tutti i destini possibili: il Big Bang, un'espansione che rallenta, il Big Crunch o un'espansione che accelera per sempre. Il nostro universo, con il 30\% di materia e il 70\% di energia oscura, è entrato in quest'ultima fase. Grazie.
+
+\end{document}

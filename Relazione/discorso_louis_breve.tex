@@ -1,0 +1,67 @@
+\documentclass[12pt,a4paper]{article}
+% Versione breve (circa 10 minuti) della parte di Louis.
+\usepackage[italian]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern,microtype}
+\usepackage[a4paper,margin=2.1cm,top=1.8cm,bottom=2cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{titlesec}
+\titleformat{\section}{\large\bfseries}{\thesection.}{0.5em}{}
+\titlespacing*{\section}{0pt}{11pt}{3pt}
+\setlength{\parskip}{5pt}
+\setlength{\parindent}{0pt}
+\linespread{1.08}
+
+\begin{document}
+
+\begin{center}
+{\Large\bfseries La dinamica dell'universo}\\[3pt]
+{\large Parte di Louis -- versione breve (circa 10 minuti)}
+\end{center}
+
+\section{Le equazioni di Friedmann}
+Grazie Lorenzo. Abbiamo visto che la storia dell'universo sta tutta nel fattore di scala $a(t)$. Come cambia nel tempo lo dicono le equazioni di Friedmann:
+\begin{align*}
+\text{I} \qquad & \left(\frac{\dot a}{a}\right)^2 = \frac{8\pi G}{3}\,\rho - \frac{k c^2}{a^2} \\[2pt]
+\text{II} \qquad & \frac{\ddot a}{a} = -\frac{4\pi G}{3}\left(\rho + \frac{3p}{c^2}\right) \\[2pt]
+\text{III} \qquad & \dot\rho = -3\,\frac{\dot a}{a}\left(\rho + \frac{p}{c^2}\right)
+\end{align*}
+La \textbf{prima} dice quanto velocemente si espande l'universo, in base a quanta materia contiene e a quanto è curvo: ha solo la derivata prima, quindi è una conservazione dell'energia. La \textbf{seconda} contiene l'accelerazione ed è la vera dinamica: dice se l'espansione rallenta o accelera. La \textbf{terza} dice come cambia la densità mentre l'universo cresce. Le incognite sono tre, ma le equazioni indipendenti solo due: manca l'\textbf{equazione di stato}, $p = w\rho c^2$, che dice di che tipo è ogni ingrediente.
+
+\section{Come si diluiscono gli ingredienti}
+Mettendo l'equazione di stato nella terza si trova $\rho \propto a^{-3(1+w)}$. La \textbf{materia} ha $w = 0$ e va come $a^{-3}$: la massa resta la stessa e il volume cresce come $a^3$. La \textbf{radiazione} ha $w = 1/3$ e va come $a^{-4}$, perché oltre a diluirsi ogni fotone si allunga e perde energia. La \textbf{costante cosmologica} ha $w = -1$ e non si diluisce affatto.
+
+\section{Densità critica e forma dello spazio}
+Se l'universo fosse piatto, la prima equazione darebbe una densità precisa, la \textbf{densità critica} $\rho_c = 3H^2/8\pi G$. Chiamando $\Omega = \rho/\rho_c$, la prima diventa
+\[ \Omega - 1 = \frac{k c^2}{a^2 H^2} . \]
+Quindi se $\Omega$ è più di uno l'universo è chiuso, se è meno è aperto, se è uno è piatto. E siccome $k$ non cambia, un universo piatto oggi resta piatto per sempre.
+
+Le misure dicono che l'universo è piatto, ma la materia, contando anche quella oscura, arriva solo al \textbf{30\%}. Il \textbf{70\%} che manca è l'energia oscura.
+
+\section{I casi}
+\textbf{Solo materia.} Mettendo $a^{-3}$ nella prima equazione si trova $a \propto t^{2/3}$. La seconda dice che l'espansione rallenta sempre, perché la gravità frena. Andando indietro, $a$ arriva a zero in un tempo finito: è il \textbf{Big Bang}. Vale per qualunque curvatura, e si evita solo con una costante cosmologica. Questo modello però dà un'età di circa 9 miliardi di anni, meno di quella vera: è il \textbf{problema dell'età}, e ci dice che manca qualcosa.
+
+\textbf{Solo radiazione.} Con $a^{-4}$ si trova $a \propto t^{1/2}$: rallenta ancora di più. È l'universo dei primi istanti.
+
+\textbf{Costante cosmologica.} Einstein voleva un universo statico e aggiunse $\Lambda$ alle equazioni: nella seconda ha il segno opposto alla materia, quindi spinge invece di frenare, come una pressione negativa. Ma Friedmann mostrò che l'universo statico è instabile, e dopo la scoperta dell'espansione Einstein la chiamò il suo più grande errore. Oggi $\Lambda$ è tornata, ma per spiegare l'accelerazione. Con solo $\Lambda$ si ha l'universo di \textbf{de Sitter}: $H$ è costante e $a$ cresce in modo \textbf{esponenziale}, senza Big Bang.
+
+\textbf{Materia e curvatura.} All'inizio la curvatura non conta. Poi, se l'universo è \textbf{chiuso}, l'espansione si ferma e ricollassa nel \textbf{Big Crunch}; se è \textbf{aperto}, si espande per sempre.
+
+\textbf{Il nostro universo.} All'inizio domina la materia e l'espansione rallenta. Poi la materia si diluisce, l'energia oscura no, e qualche miliardo di anni fa l'espansione ha cominciato ad \textbf{accelerare}: nel grafico la curva da concava diventa convessa. L'età torna \textbf{13,8 miliardi di anni}, ed è quello che si è osservato con le supernovae.
+
+\section{La regola generale}
+Quando $a$ è piccolo domina l'ingrediente che si diluisce più in fretta, quando è grande quello che si diluisce meno. Per questo prima viene la radiazione, poi la materia, e alla fine l'energia oscura.
+
+\section{Fin dove possiamo vedere}
+La sfera rossa è il \textbf{raggio di Hubble}: oltre, le galassie si allontanano più veloci della luce, perché è lo spazio stesso che si espande. La sfera arancione è l'\textbf{orizzonte}: l'universo ha un'età finita, quindi vediamo solo la regione da cui la luce ha fatto in tempo ad arrivarci.
+
+\section{Conclusione}
+Con le equazioni di Friedmann e pochi ingredienti si ottengono tutti i destini possibili: Big Bang, espansione che rallenta, Big Crunch o espansione che accelera per sempre. Il nostro universo, con il 30\% di materia e il 70\% di energia oscura, è nell'ultima fase. Grazie.
+
+\vspace{6pt}
+\hrule
+\vspace{4pt}
+\textbf{Scaletta da ricordare:} I conservazione, II dinamica, III densità $\;\to\;$ manca $w$ $\;\to\;$ $a^{-3}$, $a^{-4}$, costante $\;\to\;$ $\rho_c$ e $\Omega$: segno $=$ curvatura $\;\to\;$ 30\% + 70\% $\;\to\;$ materia $t^{2/3}$, Big Bang, età $\;\to\;$ radiazione $t^{1/2}$ $\;\to\;$ Einstein, $\Lambda$, de Sitter $\;\to\;$ chiuso Crunch, aperto per sempre $\;\to\;$ noi: accelera, 13,8 $\;\to\;$ orizzonti.
+
+\end{document}

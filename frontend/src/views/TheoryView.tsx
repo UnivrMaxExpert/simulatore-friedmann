@@ -41,14 +41,16 @@ export default function TheoryView() {
         <p className="where">
           Con il fluido perfetto <M t="p = w\rho c^2" /> la III° si integra: <M t="\rho \propto a^{-3(1+w)}" />. Polvere (materia, w = 0)
           <M t="\;\rho\propto a^{-3}" />, radiazione (w = 1/3) <M t="\;\rho\propto a^{-4}" />, costante cosmologica (w = −1) <M t="\;\rho" /> costante.
+          La I° ha solo derivate prime ed è una conservazione dell'energia; la II° è la dinamica (Newton in caduta libera più il termine relativistico 3p/c²).
+          Le incognite a, ρ, p sono tre ma solo due equazioni sono indipendenti: l'equazione di stato chiude il sistema. Su grande scala domina la gravità, perché è sempre attrattiva e si somma.
         </p>
 
         <h3>3. Hubble, densità critica, Ω</h3>
         <M block t="H \equiv \frac{\dot a}{a}, \qquad \rho_c \equiv \frac{3H^2}{8\pi G}, \qquad \Omega \equiv \frac{\rho}{\rho_c} \quad\Longrightarrow\quad \Omega - 1 = \frac{kc^2}{a^2H^2}" />
         <p className="where">
-          Quindi <M t="\operatorname{sgn}(\Omega-1) = \operatorname{sgn} k" />: Ω &gt; 1 chiuso, Ω = 1 piatto, Ω &lt; 1 aperto, e il segno non cambia nel tempo.
+          Quindi <M t="\operatorname{sgn}(\Omega-1) = \operatorname{sgn} k" />: Ω &gt; 1 chiuso, Ω = 1 piatto, Ω &lt; 1 aperto, e il segno non cambia nel tempo: piatto oggi, piatto sempre. Per conoscere k basta misurare H e ρ.
           Oggi <M t="\rho_{c,0} = 1{,}88\,h^2\cdot10^{-29}\ \text{g/cm}^3" />. La materia visibile dà <M t="\Omega_b\approx0{,}03" />, con la materia oscura
-          <M t="\;\Omega_M\approx0{,}27" />: eppure l'universo appare piatto, Ω ≈ 1.
+          <M t="\;\Omega_M\approx0{,}27" /> (dalle curve di rotazione delle galassie, piatte fino a circa 10 volte il raggio visibile); radiazione e neutrini pesano circa 10⁻⁵. Eppure l'universo appare piatto, Ω ≈ 1.
         </p>
         <div className="try"><Try preset="only_baryons">Solo materia visibile</Try></div>
 
@@ -56,7 +58,7 @@ export default function TheoryView() {
         <M block t="k = 0,\ \Lambda = 0: \qquad a(t) \propto t^{\frac{2}{3(1+w)}}, \qquad H(t) = \frac{2}{3(1+w)}\,\frac{1}{t}" />
         <p className="where">
           Se <M t="1+3w>0" /> la II° dà <M t="\ddot a<0" />: la curva a(t) è concava e, andando indietro, tocca a = 0 in un tempo finito.
-          Lì ρ → ∞ e H → ∞: è la singolarità del <b>Big Bang</b>, dovuta alle condizioni iniziali e non alla pressione.
+          Lì ρ → ∞ e H → ∞: è la singolarità del <b>Big Bang</b>, dovuta alle condizioni iniziali e non alla pressione. Il ragionamento usa solo la II°, quindi vale per universi piatti, chiusi e aperti: il Big Bang si evita solo con Λ ≠ 0 o con un fluido con w &lt; −1/3.
         </p>
         <table className="table">
           <thead><tr><th>fluido</th><th>w</th><th>a(t)</th><th>età t₀</th></tr></thead>
@@ -67,7 +69,7 @@ export default function TheoryView() {
         </table>
         <p className="note">
           Il problema dell'età: con la sola materia l'universo avrebbe circa 9–10 miliardi di anni, ma le misure dicono 13,8.
-          Servono curvatura o altre componenti: l'energia oscura. Confronta i due modelli con il pulsante «Aggiungi il modello al confronto».
+          Servono curvatura o altre componenti, e poiché l'universo osservato è piatto la risposta è l'energia oscura. Prova i due modelli qui sotto e guarda l'età nei risultati.
         </p>
         <div className="try">
           <Try preset="einstein_de_sitter">Solo materia, piatto</Try>
@@ -79,9 +81,9 @@ export default function TheoryView() {
         <p>
           Einstein cercava un universo <b>statico</b>: con <M t="\ddot a = 0" /> la II° chiede <M t="\rho = -3p/c^2" />, impossibile con un fluido
           ordinario. Aggiunse allora Λ alle equazioni di campo, che equivale a un fluido con w = −1 e <M t="\rho_\Lambda = \Lambda c^2/8\pi G" />.
-          L'equilibrio è però instabile, e con la scoperta dell'espansione Einstein lo definì «il più grande errore della mia vita».
+          Friedmann dimostrò però che questo equilibrio è instabile, e con la scoperta dell'espansione Einstein lo definì «il più grande errore della mia vita». Oggi Λ è tornata, non per rendere statico l'universo ma per spiegarne l'espansione accelerata: equivale a una pressione negativa.
         </p>
-        <M block t="\Lambda > 0,\ \text{solo vuoto}: \quad H = c\sqrt{\Lambda/3} = \text{cost}, \qquad a(t) \propto e^{Ht} \quad \text{(de Sitter)}" />
+        <M block t="\Lambda > 0,\ \text{vuoto e piatto}: \quad H = c\sqrt{\Lambda/3} = \text{cost}, \qquad a(t) \propto e^{Ht} \quad \text{(de Sitter)}" />
         <p className="where">
           Con Λ &lt; 0 si ha l'universo di anti-de Sitter, che si ferma e ricollassa. Un'espansione esponenziale come quella di de Sitter è
           l'inflazione dell'universo primordiale, ed è anche il futuro del nostro universo.
@@ -96,7 +98,7 @@ export default function TheoryView() {
         <M block t="\ddot a > 0 \iff \rho + \frac{3p}{c^2} < 0 \iff w < -\frac{1}{3}" />
         <p className="where">
           Le supernovae mostrano che oggi l'espansione accelera; CMB e dinamica degli ammassi indicano che circa il 70 % della densità è energia oscura.
-          Il parametro di decelerazione <M t="q = -\ddot a a / \dot a^2" /> diventa negativo: nel grafico q(t) del simulatore si vede quando succede.
+          Il parametro di decelerazione <M t="q = -\ddot a a / \dot a^2" /> diventa negativo: nella scheda «Accelerazione q» del simulatore si vede quando succede.
         </p>
 
         <h3>7. Modelli curvi</h3>
@@ -121,8 +123,8 @@ export default function TheoryView() {
         <M block t="\chi_p(t) = c\int_0^{t}\frac{dt'}{a(t')}, \qquad r_H = \frac{c}{a H} = \frac{c}{\dot a}" />
         <p className="where">
           Il cono luce è «tagliato» dal Big Bang: possiamo ricevere segnali solo dentro l'orizzonte della particella, che cresce col tempo.
-          Oltre il raggio di Hubble la velocità di recessione supera c. Regioni opposte del fondo cosmico hanno la stessa temperatura pur non
-          essendo mai state in contatto (problema dell'orizzonte): lo risolve l'inflazione, durante la quale il raggio di Hubble comovente si restringe.
+          Oltre il raggio di Hubble la velocità di recessione supera c. Regioni opposte del fondo cosmico hanno la stessa temperatura anche se, nel modello standard, non
+          avrebbero mai potuto essere in contatto (problema dell'orizzonte): lo risolve l'inflazione, un'espansione accelerata iniziale che le ha messe in contatto prima e poi le ha allontanate.
           Nel simulatore si vedono entrambe le sfere attorno a noi.
         </p>
         <div className="try">
